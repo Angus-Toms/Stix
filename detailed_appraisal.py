@@ -12,7 +12,7 @@ from typing import List
 from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QDoubleValidator, QIntValidator
 from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog,
-                             QDialogButtonBox, QFormLayout, QGridLayout,
+                             QDialogButtonBox, QFileDialog, QFormLayout, QGridLayout,
                              QGroupBox, QHBoxLayout, QHeaderView, QLabel,
                              QLineEdit, QMessageBox, QPushButton, QRadioButton,
                              QScrollArea, QSpinBox, QTableWidget,
@@ -326,11 +326,21 @@ class UploadTab(QWidget):
         self.parent.res_tab.display_props()
         self.parent.non_res_tab.display_props()
 
+    def get_prop_fname(self) -> str:
+        """ Instansiate file dialog widget for user to select property dataset
+
+        Returns:
+            str: Selected filename, None if dialog is closed before file is selected
+        """
+        file_types = "CSVs (*.csv);;DBFs (*.dbf)"
+        return QFileDialog.getOpenFileName(self, "Select Dataset", "", file_types)
+
     def upload_prop_dataset(self) -> None:
         """
         Get filename from user and instantiate dialog
         """
-        fname = utils.get_prop_fname(self)
+        fname = self.get_prop_fname()
+        print(fname)
 
         # Only run if file is selected
         if fname[0]:

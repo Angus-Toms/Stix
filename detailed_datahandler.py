@@ -290,12 +290,9 @@ class DetailedDataHandler():
 
         # Get body
         body = np.loadtxt(fname, skiprows=6)
-        print(f"Unfiltered body: {body}")
 
         # Filter NODATAs
         body = np.where(body == header_clean[-1], None, body)
-
-        print(f"Filtered body: {body}")
 
         # Add to master lists
         self.ascii_fnames.append(fname)

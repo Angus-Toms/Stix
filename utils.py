@@ -56,32 +56,12 @@ def centered_hbox_lyt(lyt: QHBoxLayout) -> QHBoxLayout:
 FILE DIALOGS
 """
 
-def get_ascii_fnames(parent: QWidget) -> List[List[str]]:
-    """
-    Run an open file dialog for multiple ASCII grids
-    """
-    file_types = "ASCII Grids (*.asc)"
-
-    # Discard file type
-    return QFileDialog.getOpenFileNames(
-        parent, "Select ASCII Grids", "", file_types)[0]
-
 
 def get_save_fname(parent: QWidget) -> str:
     """
     Run a save file name dialog, discarding filetype
     """
     return QFileDialog.getSaveFileName(parent, "Select Save Location")[0]
-
-
-def get_appraisal_fname(parent: QWidget) -> str:
-    """
-    Run an open file anem dialog, discarding filetype
-    """
-    file_types = "Triton Appraisals (*.trit) ;; All Files (*.*)"
-
-    # Discard filetype
-    return QFileDialog.getOpenFileName(parent, "Select Saved Appraisal", "", file_types)[0]
 
 
 """

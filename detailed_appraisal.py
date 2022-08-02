@@ -7,7 +7,7 @@ Angus Toms
 import json
 import os
 from functools import partial
-from typing import List
+from typing import List, Tuple
 
 from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QDoubleValidator, QIntValidator
@@ -326,11 +326,11 @@ class UploadTab(QWidget):
         self.parent.res_tab.display_props()
         self.parent.non_res_tab.display_props()
 
-    def get_prop_fname(self) -> str:
-        """ Instansiate file dialog widget for user to select property dataset
+    def get_prop_fname(self) -> Tuple[str, str]:
+        """ Instanciate file dialog widget for user to select property/node dataset
 
         Returns:
-            str: Selected filename, None if dialog is closed before file is selected
+            str: Selected filename and filetype, empty strings if dialog is closed before file is selected
         """
         file_types = "CSVs (*.csv);;DBFs (*.dbf)"
         return QFileDialog.getOpenFileName(self, "Select Dataset", "", file_types)
@@ -340,7 +340,6 @@ class UploadTab(QWidget):
         Get filename from user and instantiate dialog
         """
         fname = self.get_prop_fname()
-        print(fname)
 
         # Only run if file is selected
         if fname[0]:
@@ -399,11 +398,22 @@ class UploadTab(QWidget):
         self.prop_progress_label.setText(
             f"Upload progress: {round(progess_pct*100)}%")
 
+    def get_ascii_fnames(self) -> List[str]:
+        """ Instanciate file dialog widget for user to select ascii grid(s)
+
+        Returns:
+            List[str]: Selected filenames
+        """
+        file_types = "ASCII Grids (*.asc)"
+
+        # Discard file type
+        return QFileDialog.getOpenFileNames(self, "Select ASCII Grids", "", file_types)[0]
+
     def upload_ascii(self) -> None:
         """
         Get ASCII filenames and upload to database
         """
-        fnames = utils.get_ascii_fnames(self)
+        fnames = self.get_ascii_fnames()
 
         # Instantiate thread and worker
         self.thread = QThread()
@@ -458,7 +468,7 @@ class UploadTab(QWidget):
         """
         Get filename from user and instantiate dialog 
         """
-        fname = utils.get_prop_fname(self)
+        fname = self.get_prop_fname()
 
         # Only run if file is selected
         if fname[0]:
@@ -2336,7 +2346,6 @@ class PropManualUpload(QDialog):
 
         # Valid non-residential property
         elif not self.prop_is_res and utils.is_valid_non_res(prop_details):
-            print("Valid non-res")
             self.accept()
 
         else:

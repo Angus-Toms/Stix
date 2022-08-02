@@ -56,13 +56,6 @@ def centered_hbox_lyt(lyt: QHBoxLayout) -> QHBoxLayout:
 FILE DIALOGS
 """
 
-
-def get_prop_fname(parent: QWidget) -> List[str]: 
-    file_types = "CSVs (*.csv);;DBFs (*.dbf)"
-    return QFileDialog.getOpenFileName(
-        parent, "Select Dataset", "", file_types)
-
-
 def get_ascii_fnames(parent: QWidget) -> List[List[str]]:
     """
     Run an open file dialog for multiple ASCII grids
@@ -962,7 +955,3 @@ class IntegerDelegate(QItemDelegate):
         w = QLineEdit(parent)
         w.setInputMask("ddd")
         return w
-
-""" 
-TEST CHANGES
-"""

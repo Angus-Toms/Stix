@@ -57,10 +57,7 @@ FILE DIALOGS
 """
 
 
-def get_prop_fname(parent: QWidget) -> List[str]:
-    """
-    Run an open file file dialog for property datasets
-    """
+def get_prop_fname(parent: QWidget) -> List[str]: 
     file_types = "CSVs (*.csv);;DBFs (*.dbf)"
     return QFileDialog.getOpenFileName(
         parent, "Select Dataset", "", file_types)
@@ -965,3 +962,7 @@ class IntegerDelegate(QItemDelegate):
         w = QLineEdit(parent)
         w.setInputMask("ddd")
         return w
+
+""" 
+TEST CHANGES
+"""

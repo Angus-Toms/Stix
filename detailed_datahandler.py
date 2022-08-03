@@ -1,8 +1,8 @@
 """
-Data handling class for detailed appraisals performed by Triton FAS
+Data handling class for detailed appraisals performed by Triton FAS 
 
 Angus Toms
-12 05 2021
+12 05 2021  
 """
 import json
 import os
@@ -13,10 +13,13 @@ from typing import List
 import numpy as np
 from PyQt5.QtWidgets import QTableWidget
 
-import utils
-
+import utils 
 
 class DetailedDataHandler():
+    """
+    Methods for upload storage / deletion / editing / processing and saving of
+    data used in Detailed Appraisals
+    """
     def __init__(self) -> None:
         # Residential information
         self.res_eastings = []
@@ -233,9 +236,9 @@ class DetailedDataHandler():
     """
 
     def add_prop(self, prop_details: List[str]) -> None:
-        """
-        Add prop to master lists if valid
-        NOTE: All prop details contain FA so entry 6 is skipped for res props
+        """ Add property details (if valid) to data handler
+        
+        Args: prop_details (List[str]): Easting, northing, primary address, secondary address, town, postcode, MCM code of property to be uploaded
         """
         if utils.is_valid_res(prop_details):
             self.res_eastings.append(float(prop_details[0]))
@@ -251,8 +254,7 @@ class DetailedDataHandler():
         elif utils.is_valid_non_res(prop_details):
             self.non_res_eastings.append(float(prop_details[0]))
             self.non_res_northings.append(float(prop_details[1]))
-            self.non_res_addresses.append(
-                f"{prop_details[2]} {prop_details[3]}")
+            self.non_res_addresses.append(f"{prop_details[2]} {prop_details[3]}")
             self.non_res_towns.append(prop_details[4])
             self.non_res_postcodes.append(prop_details[5])
             self.non_res_floor_areas.append(float(prop_details[6]))
@@ -261,15 +263,16 @@ class DetailedDataHandler():
             self.non_res_count += 1
             self.non_res_ground_levels.append(None)
 
-    def add_node(self, node_details: List) -> None:
-        """ 
-        App node to master lists if valid 
+    def add_node(self, node_details: List[str]) -> None:
+        """ Add node details (if valid) to data handler
+
+        Args:
+            node_details (List[str]): Easting, northing, depths at various return periods
         """
         if utils.is_valid_node(node_details):
-            self.node_eastings.append(
-                None if self.is_blank(node_details[0]) else float(node_details[0]))
-            self.node_northings.append(
-                None if self.is_blank(node_details[1]) else float(node_details[1]))
+            self.node_eastings.append(None if self.is_blank(node_details[0]) else float(node_details[0])) 
+            self.node_northings.append(None if self.is_blank(node_details[1]) else float(node_details[1]))
+
 
             depths = node_details[2::]
             clean_depths = [None if self.is_blank(
@@ -280,8 +283,10 @@ class DetailedDataHandler():
             self.node_count += 1
 
     def add_ascii(self, fname: str) -> None:
-        """
-        Read information from ASCII grid into master lists 
+        """ Add ASCII grid information to data handler
+
+        Args:
+            fname (str): Filename of ASCII grid to be added
         """
         # Get and clean headers
         header = [getline(fname, i+1) for i in range(6)]
@@ -311,30 +316,34 @@ class DetailedDataHandler():
         self.ascii_count += 1
 
     def add_props_from_table(self, columns: List[int], table: QTableWidget) -> None:
-        """
-        Add properties found in a QTableWidget with custom columns 
+        """ Add properties found in a QTableWidget to data hander
+
+        Args:
+            columns (List[int]): List of columns containing relevant property information
+            table (QTableWidget): Table containing property information
         """
         all_props = utils.read_table_with_columns(columns, table)
         for prop in all_props:
             self.add_prop(prop)
 
     def add_nodes_from_table(self, columns: List[int], table: QTableWidget) -> None:
-        """
-        Add nodes found in a QTableWidget with custom columns 
+        """ Add nodes found in a QTableWidget to data handler
+
+        Args:
+            columns (List[int]): List of columns containing relevant node information
+            table (QTableWidget): Table containing node information
         """
         nodes_found = utils.read_table_with_columns(columns, table)
         for node in nodes_found:
             self.add_node(node)
 
     def edit_res(self, prop_details: List[str], gl: str, index: int) -> None:
-        """
-        Edit database information for given property 
-        - prop_details[0]: Easting (float)
-        - prop_details[1]: Northing (float)
-        - prop_details[2]: FULL ADDRESS (str)
-        - prop_details[3]: Town (str)
-        - prop_details[4]: Postcode (str)
-        - prop_details[5]: MCM Code (int)
+        """ Edit details of residential property found in data handler
+
+        Args:
+            prop_details (List[str]): New easting, northing, address, town, postcode, and MCM code values
+            gl (str): New ground level value
+            index (int): Index of property to be edited
         """
         self.res_eastings[index] = float(prop_details[0])
         self.res_northings[index] = float(prop_details[1])
@@ -346,15 +355,12 @@ class DetailedDataHandler():
         self.res_ground_levels[index] = float(gl) if bool(gl and gl.strip()) else None
 
     def edit_non_res(self, prop_details: List[str], gl: str, index: int) -> None:
-        """
-        Edit database information for given property 
-        - prop_details[0]: Easting (float)
-        - prop_details[1]: Northing (float)
-        - prop_details[2]: FULL ADDRESS (str)
-        - prop_details[3]: Town (str)
-        - prop_details[4]: Postcode (str)
-        - prop_details[5]: Floor Area (float)
-        - prop_details[6]: MCM code (int)
+        """ Edit details of non-residential property found in data handler
+
+        Args:
+            prop_details (List[str]): New easting, northing, address, town, postcode, floor area, and MCM code values
+            gl (str): New ground level value
+            index (int): Index of property to be edited
         """
         self.non_res_eastings[index] = float(prop_details[0])
         self.non_res_northings[index] = float(prop_details[1])
@@ -368,8 +374,11 @@ class DetailedDataHandler():
         self.non_res_ground_levels[index] = float(gl) if bool(gl and gl.strip()) else None
 
     def edit_node(self, node_details: List[str], index: int) -> None:
-        """
-        Edit database information for given node 
+        """ Edit details of node found in data handler
+
+        Args:
+            node_details (List[str]): New easting, northing, and depths at various return periods values
+            index (int): Index of node to be edited 
         """
         self.node_eastings[index] = None if self.is_blank(
             node_details[0]) else float(node_details[0])
@@ -380,10 +389,13 @@ class DetailedDataHandler():
                 node_details[j+2]) else float(node_details[j+2])
 
     def edit_ascii(self, ascii_details: List[str], index: int) -> None:
-        """
-        Edit database information for given ascii grid 
-        Only fname, corners, and cellsizes can be changes
-        """
+        """ Edit selected details of ASCII grid found in data handler
+        NOTE: Only filename, corner coordinates and cellsizes can be edited
+
+        Args:
+            ascii_details (List[str]): New filename, corner x coordinate, corner y coordinate, and cellsize values
+            index (int): Index of ASCII grid to be edited
+        """     
         self.ascii_fnames[index] = None if self.is_blank(
             ascii_details[0]) else ascii_details[0]
         self.x_corners[index] = None if self.is_blank(
@@ -394,9 +406,11 @@ class DetailedDataHandler():
             ascii_details[3]) else int(ascii_details[3])
 
     def delete_res(self, index: int) -> None:
-        """
-        Delete residential property from database
-        """
+        """ Remove residential property from data handler
+
+        Args:
+            index (int): Index of property to be removed
+        """ 
         del self.res_eastings[index]
         del self.res_northings[index]
         del self.res_addresses[index]
@@ -408,8 +422,10 @@ class DetailedDataHandler():
         self.res_count -= 1
 
     def delete_non_res(self, index: int) -> None:
-        """
-        Delete non-residential property from database
+        """ Remove non-residential property from data handler
+
+        Args:
+            index (int): Index of property to be removed
         """
         del self.non_res_eastings[index]
         del self.non_res_northings[index]
@@ -423,8 +439,10 @@ class DetailedDataHandler():
         self.non_res_count -= 1
 
     def delete_node(self, index: int) -> None:
-        """ 
-        Delete node from database
+        """ Remove node from data handler
+
+        Args:
+            index (int): Index of node to be removed
         """
         del self.node_eastings[index]
         del self.node_northings[index]
@@ -432,9 +450,11 @@ class DetailedDataHandler():
 
         self.node_count -= 1
 
-    def delete_ascii(self, index: int) -> None:
-        """
-        Delete ASCII grid information from database 
+    def delete_ascii(self, index: int) -> None: 
+        """ Remove ASCII grid from data handler
+        
+        Args:
+            index (int): Index of ASCII grid to be removed
         """
         del self.ascii_fnames[index]
         del self.n_cols[index]
@@ -452,8 +472,7 @@ class DetailedDataHandler():
     """
 
     def get_res_elevations(self) -> None:
-        """
-        Calculate ground level of residential properties from ASCII grids
+        """ Calculate ground level of residential properties from ASCII grids
         """
         for i in range(self.res_count):
             x = self.res_eastings[i]
@@ -489,8 +508,7 @@ class DetailedDataHandler():
                     self.res_ground_levels[i] = self.raster_points[j][y_index][x_index]
 
     def get_non_res_elevations(self) -> None:
-        """
-        Calculate ground level of non-residential properties from ASCII grids
+        """ Calculate ground level of non-residential properties from ASCII grids
         """
         for i in range(self.non_res_count):
             x = self.non_res_eastings[i]
@@ -525,89 +543,6 @@ class DetailedDataHandler():
 
                     self.non_res_ground_levels[i] = self.raster_points[j][y_index][x_index]
 
-    def get_parent_ascii(self, index: int, res: bool) -> int:
-        """
-        Find index of ASCII containing arg property
-        """
-        # Residential property arg
-        if res:
-            x = self.res_eastings[index]
-            y = self.res_northings[index]
-
-        else:
-            x = self.non_res_eastings[index]
-            y = self.non_res_northings[index]
-
-        for i in range(self.ascii_count):
-            x_start = self.x_corners[i]
-            x_stop = x_start + (self.n_cols[i] * self.cellsizes[i])
-
-            y_start = self.y_corners[i]
-            y_stop = y_start + (self.n_rows[i] * self.cellsizes[i])
-
-            if x >= x_start and x <= x_stop and y >= y_start and y <= y_stop:
-                return i
-
-        return None
-
-    def get_res_in_ascii(self, index: int) -> List[int]:
-        """
-        Return indexes of residential properties found within the bounds of the arg ASCII grid
-        """
-        x_start = self.x_corners[index]
-        x_stop = x_start + (self.n_cols[index] * self.cellsizes[index])
-
-        y_start = self.y_corners[index]
-        y_stop = y_start + (self.n_rows[index] * self.cellsizes[index])
-
-        props = []
-        for i in range(self.res_count):
-            x = self.res_eastings[i]
-            y = self.res_northings[i]
-            if x >= x_start and x <= x_stop and y >= y_start and y <= y_stop:
-                props.append(i)
-
-        return props
-
-    def get_non_res_in_ascii(self, index: int) -> List[int]:
-        """
-        Return indexes of non-residential properties found within bound of the arg ASCII grid 
-        """
-        x_start = self.x_corners[index]
-        x_stop = x_start + (self.n_cols[index] * self.cellsizes[index])
-
-        y_start = self.y_corners[index]
-        y_stop = y_start + (self.n_rows[index] * self.cellsizes[index])
-
-        props = []
-        for i in range(self.non_res_count):
-            x = self.non_res_eastings[i]
-            y = self.non_res_northings[i]
-
-            if x >= x_start and x <= x_stop and y >= y_start and y <= y_stop:
-                props.append(i)
-
-        return props
-
-    def get_nodes_in_ascii(self, index: int) -> List[int]:
-        """ 
-        Return indexes of nodes found within bound of the arg ASCII grid
-        """
-        x_start = self.x_corners[index]
-        x_stop = x_start + (self.n_cols[index] * self.cellsizes[index])
-
-        y_start = self.y_corners[index]
-        y_stop = y_start + (self.n_rows[index] * self.cellsizes[index])
-
-        nodes = []
-        for i in range(self.node_count):
-            x = self.node_eastings[i]
-            y = self.node_northings[i]
-
-            if x >= x_start and x <= x_stop and y >= y_start and y <= y_stop:
-                nodes.append(i)
-
-        return nodes
 
     def is_blank(self, s: str) -> bool:
         """
@@ -616,30 +551,19 @@ class DetailedDataHandler():
         return not (s and s.strip())
 
     def get_major_datapoints(self) -> None:
-        """
-        Get 2d list of major datapoints to be displayed in summary tables
+        """ Get 2d list of major datapoints to be displayed in summary tables
         """
         return [
-            [self.total_average_res_damage, self.total_lifetime_res_damage, self.annual_res_damage_after,
-                self.lifetime_res_damage_after, self.current_annual_res_benefit, self.current_lifetime_res_benefit],
-            [self.total_average_intangible_damage,
-                self.total_lifetime_intangible_damage, self.annual_intangible_damage_after, self.lifetime_intangible_damage_after, self.current_annual_intangible_benefit, self.current_lifetime_intangible_benefit],
-            [self.total_average_mh_costs, self.total_lifetime_mh_costs, self.annual_mh_damage_after,
-                self.lifetime_mh_damage_after, self.current_annual_mh_benefit, self.current_lifetime_mh_benefit],
-            [self.total_average_vehicular_damages, self.total_lifetime_vehicular_damages, self.annual_vehicle_damage_after,
-                self.lifetime_vehicle_damage_after, self.current_annual_vehicle_benefit, self.current_lifetime_vehicle_benefit],
-            [self.total_average_evac_costs, self.total_lifetime_evac_costs, self.annual_evac_damage_after,
-                self.lifetime_evac_damage_after, self.current_annual_evac_benefit, self.current_lifetime_evac_benefit],
-            [self.total_average_non_res_damage, self.total_lifetime_non_res_damage, self.annual_non_res_damage_after,
-                self.lifetime_non_res_damage_after, self.current_annual_non_res_benefit, self.current_lifetime_non_res_benefit],
-            [self.total_average_disruption, self.total_lifetime_disruption, self.annual_disruption_after,
-                self.lifetime_disruption_after, self.current_annual_disruption_benefit, self.current_lifetime_disruption_benefit],
-            [self.total_average_infrastructure_damage, self.total_lifetime_infrastructure_damage, self.annual_infrastructure_damage_after,
-                self.lifetime_infrastructure_damage_after, self.current_annual_infrastructure_benefit, self.current_lifetime_infrastructure_benefit],
-            [self.total_average_emergency_services_costs, self.total_lifetime_emergency_services_costs, self.annual_emergency_services_cost_after,
-                self.lifetime_emergency_services_cost_after, self.current_annual_emergency_services_benefit, self.current_lifetime_emergency_services_benefit],
-            [self.total_average_annual_damage, self.total_lifetime_damage, self.total_annual_damage_after,
-                self.total_lifetime_damage, self.total_current_annual_benefit, self.total_current_lifetime_benefit]
+            [self.total_average_res_damage, self.total_lifetime_res_damage, self.annual_res_damage_after, self.lifetime_res_damage_after, self.current_annual_res_benefit, self.current_lifetime_res_benefit],
+            [self.total_average_intangible_damage, self.total_lifetime_intangible_damage, self.annual_intangible_damage_after, self.lifetime_intangible_damage_after, self.current_annual_intangible_benefit, self.current_lifetime_intangible_benefit],
+            [self.total_average_mh_costs, self.total_lifetime_mh_costs, self.annual_mh_damage_after, self.lifetime_mh_damage_after, self.current_annual_mh_benefit, self.current_lifetime_mh_benefit],
+            [self.total_average_vehicular_damages, self.total_lifetime_vehicular_damages, self.annual_vehicle_damage_after, self.lifetime_vehicle_damage_after, self.current_annual_vehicle_benefit, self.current_lifetime_vehicle_benefit],
+            [self.total_average_evac_costs, self.total_lifetime_evac_costs, self.annual_evac_damage_after, self.lifetime_evac_damage_after, self.current_annual_evac_benefit, self.current_lifetime_evac_benefit],
+            [self.total_average_non_res_damage, self.total_lifetime_non_res_damage, self.annual_non_res_damage_after, self.lifetime_non_res_damage_after, self.current_annual_non_res_benefit, self.current_lifetime_non_res_benefit],
+            [self.total_average_disruption, self.total_lifetime_disruption, self.annual_disruption_after, self.lifetime_disruption_after, self.current_annual_disruption_benefit, self.current_lifetime_disruption_benefit],
+            [self.total_average_infrastructure_damage, self.total_lifetime_infrastructure_damage, self.annual_infrastructure_damage_after, self.lifetime_infrastructure_damage_after, self.current_annual_infrastructure_benefit, self.current_lifetime_infrastructure_benefit],
+            [self.total_average_emergency_services_costs, self.total_lifetime_emergency_services_costs, self.annual_emergency_services_cost_after, self.lifetime_emergency_services_cost_after, self.current_annual_emergency_services_benefit, self.current_lifetime_emergency_services_benefit],
+            [self.total_average_annual_damage, self.total_lifetime_damage, self.total_annual_damage_after, self.total_lifetime_damage, self.total_current_annual_benefit, self.total_current_lifetime_benefit]
         ]
 
     """
@@ -647,8 +571,7 @@ class DetailedDataHandler():
     """
 
     def get_damages(self) -> None:
-        """
-        Calculate all damages from currently uploaded info
+        """ Calculate all damages from currently uploaded info
         """
         # Access flood information
         self.df = utils.get_cumulative_discount_factor(self.scheme_lifetime)
@@ -701,8 +624,7 @@ class DetailedDataHandler():
         self.get_total_damages()
 
     def get_residential_damages(self) -> None:
-        """
-        Calculate damages occuring to residential properties 
+        """ Calculate damages occuring to residential properties 
         """
         # Access flood information
         event_damages = utils.get_res_event_damages(self.event_type)
@@ -780,8 +702,7 @@ class DetailedDataHandler():
                         damage, self.capped_average_annual_damage_per_res[prop]) for damage in damages]
 
     def get_intangible_damages(self) -> None:
-        """
-        Calculate intangible damages arising from flood event
+        """ Calculate intangible damages arising from flood event
         """
         self.current_sops = [utils.get_current_sop(
             self.return_periods, self.capped_res_depths[i]) for i in range(self.clean_res_count)]
@@ -801,8 +722,7 @@ class DetailedDataHandler():
             self.lifetime_intangible_damages)
 
     def get_mental_health_damages(self) -> None:
-        """
-        Calculate mental health costs arising from flood event
+        """ Calculate mental health costs arising from flood event
         """
         self.mh_costs = [utils.get_mh_costs(
             self.capped_res_depths[i], self.clean_res_m[i]) for i in range(self.clean_res_count)]
@@ -820,8 +740,7 @@ class DetailedDataHandler():
         self.total_lifetime_mh_costs = sum(self.lifetime_mh_costs)
 
     def get_vehicular_damages(self) -> None:
-        """
-        Calcuate vehicular damages arising from flood event
+        """ Calcuate vehicular damages arising from flood event
         """
         # Find weighting from event type
         weighting = 0.75
@@ -851,8 +770,7 @@ class DetailedDataHandler():
             self.lifetime_vehicular_damages)
 
     def get_evac_damages(self) -> None:
-        """
-        Calculate evacuation costs arising from flood event
+        """ Calculate evacuation costs arising from flood event
         """
         # Get direct evac costs based on event type
         direct_costs = utils.get_evac_category_costs(self.evac_cost_category)
@@ -876,8 +794,7 @@ class DetailedDataHandler():
         self.total_lifetime_evac_costs = sum(self.lifetime_evac_costs)
 
     def get_non_residential_damages(self) -> None:
-        """
-        Calculate damages occuring to non-residential properties
+        """ Calculate damages occuring to non-residential properties
         """
         # Access flood information
         event_damages = utils.get_non_res_event_damages(
@@ -960,15 +877,13 @@ class DetailedDataHandler():
                         damage, self.capped_average_annual_damage_per_non_res[prop]) for damage in damages]
 
     def get_disruption_damages(self) -> None:
-        """
-        Calculate business disruption damages arising from flood event 
+        """ Calculate business disruption damages arising from flood event 
         """
         self.total_average_disruption = self.total_average_non_res_damage * 0.03
         self.total_lifetime_disruption = self.total_lifetime_non_res_damage * 0.03
 
     def get_infrastructure_damages(self) -> None:
-        """
-        Calculate infrastructure damages from a given flood event
+        """ Calculate infrastructure damages from a given flood event
         """
         if self.caps_enabled:
             self.total_average_infrastructure_damage = (
@@ -976,8 +891,7 @@ class DetailedDataHandler():
             self.total_lifetime_infrastructure_damage = self.total_average_infrastructure_damage * self.df
 
     def get_emergency_services_damages(self) -> None:
-        """
-        Calculate emergency services and recovery costs arising from a given flood event
+        """ Calculate emergency services and recovery costs arising from a given flood event
         """
         location_weight = utils.get_location_weight(self.location)
         all_damages = [
@@ -995,8 +909,7 @@ class DetailedDataHandler():
         self.total_lifetime_emergency_services_costs = self.total_average_emergency_services_costs * self.health_df
 
     def get_total_damages(self) -> None:
-        """
-        Calculate total damages arising from a given flood event
+        """ Calculate total damages arising from a given flood event
         """
         average_damages = [
             self.total_average_res_damage,
@@ -1030,8 +943,7 @@ class DetailedDataHandler():
     """
 
     def get_benefits(self) -> None:
-        """
-        Calculate all benefits from currently uploaded info
+        """ Calculate all benefits from currently uploaded info
         """
         self.get_residential_benefits()
         self.get_intangible_benefits()
@@ -1045,8 +957,7 @@ class DetailedDataHandler():
         self.get_total_benefits()
 
     def get_residential_benefits(self) -> None:
-        """
-        Calculate benefits to residential properties
+        """ Calculate benefits to residential properties
         """
         # Apply trapezium rule
         self.res_benefits = [utils.get_benefits(
@@ -1075,8 +986,7 @@ class DetailedDataHandler():
             self.current_lifetime_res_benefit
 
     def get_intangible_benefits(self) -> None:
-        """
-        Calculate intangible benefits
+        """ Calculate intangible benefits
         """
         # Bilinear interpolation
         self.annual_intangible_benefits = [utils.get_intangible_benefit(
@@ -1099,8 +1009,7 @@ class DetailedDataHandler():
             self.current_lifetime_intangible_benefit
 
     def get_mental_health_benefits(self) -> None:
-        """
-        Calculate mental health benefits
+        """ Calculate mental health benefits
         """
         # Apply trapezium rule
         self.mh_benefits = [utils.get_benefits(
@@ -1124,8 +1033,7 @@ class DetailedDataHandler():
             self.current_lifetime_mh_benefit
 
     def get_vehicular_benefits(self) -> None:
-        """
-        Calculate vehicle benefits 
+        """ Calculate vehicle benefits 
         """
         # Apply trapezium rule
         self.vehicular_benefits = [utils.get_benefits(
@@ -1149,8 +1057,7 @@ class DetailedDataHandler():
             self.current_lifetime_vehicle_benefit
 
     def get_evac_benefits(self) -> None:
-        """
-        Calculate evacuation benefits
+        """ Calculate evacuation benefits
         """
         # Apply trapezium rule
         self.evac_benefits = [utils.get_benefits(
@@ -1174,8 +1081,7 @@ class DetailedDataHandler():
             self.current_lifetime_evac_benefit
 
     def get_non_residential_benefits(self) -> None:
-        """
-        Calculate benefits to non-residential properties
+        """ Calculate benefits to non-residential properties
         """
         # Apply trapezium rule
         self.non_res_benefits = [utils.get_benefits(
@@ -1204,8 +1110,7 @@ class DetailedDataHandler():
             self.current_lifetime_non_res_benefit
 
     def get_disruption_benefits(self) -> None:
-        """
-        Calculate relative benefits to business disruption
+        """ Calculate relative benefits to business disruption
         """
         # Benefits
         self.current_annual_disruption_benefit = self.current_annual_non_res_benefit * 0.03
@@ -1216,8 +1121,7 @@ class DetailedDataHandler():
         self.lifetime_disruption_after = self.lifetime_disruption_after * 0.03
 
     def get_infrastructure_benefits(self) -> None:
-        """
-        Calculate infrastructure benefits
+        """ Calculate infrastructure benefits
         """
 
         # Calculate post-intervention damages
@@ -1231,8 +1135,7 @@ class DetailedDataHandler():
         self.current_lifetime_infrastructure_benefit = self.current_annual_infrastructure_benefit * self.df
 
     def get_emergency_services_benefits(self) -> None:
-        """
-        Calculate emergency services and recovery benefits arising from given flood event
+        """ Calculate emergency services and recovery benefits arising from given flood event
         """
         location_weight = utils.get_location_weight(self.location)
         all_damages = [
@@ -1256,8 +1159,7 @@ class DetailedDataHandler():
         self.current_lifetime_emergency_services_benefit = self.current_annual_emergency_services_benefit * self.health_df
 
     def get_total_benefits(self) -> None:
-        """
-        Calculate total benefits arising from flood event
+        """ Calculate total benefits arising from flood event
         """
         # Post-intervention damages
         annual_post_damages = [
@@ -1318,8 +1220,13 @@ class DetailedDataHandler():
     """
 
     def export_results(self, fname: str, damages: List[bool], benefits: List[bool], file_formats: List[bool]) -> None:
-        """
-        Export arg results to arg fname 
+        """ Write selected appraisal results in selected formats
+
+        Args:
+            fname (str): Location of results folders
+            damages (List[bool]): Damage results to be saved
+            benefits (List[bool]): Benefit results to be saved
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Build directories
         self.build_folders(fname, file_formats)
@@ -1354,8 +1261,11 @@ class DetailedDataHandler():
                 benefits_funcs[i](fname, file_formats)
 
     def build_folders(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Create results folders in save location
+        """ Write folders for results to be saved in
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         csv_path = os.path.join(fname, "CSVs")
         xlsx_path = os.path.join(fname, "XLSXs")
@@ -1375,8 +1285,11 @@ class DetailedDataHandler():
                 os.mkdir(xlsx_path)
 
     def write_summary(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing summary of results
+        """ Write summary results
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File format(s) for results in be written in
         """
         # Table headings
         dataset = [["Damage Type", "Existing Annual Damage (£)", "Existing Lifetime Damage (£)", "Post-intervention Annual Damage (£)",
@@ -1411,8 +1324,11 @@ class DetailedDataHandler():
                 fname, "XLSXs/Results Summary.xlsx"))
 
     def write_res_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of residential damages
+        """ Write files containing breakdown of residential damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [
@@ -1421,8 +1337,7 @@ class DetailedDataHandler():
             # Add cap-related headings
             dataset[0] += [
                 "Capped Average Annual Damage (£)", "Capped Lifetime Damage (£)"]
-        dataset[0] += ["{}% AEP Damage (£)".format(round(100/rp, 2))
-                       for rp in self.return_periods]
+        dataset[0] += [f"{round(100/rp, 2)}% AEP Damage (£)" for rp in self.return_periods]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1447,8 +1362,11 @@ class DetailedDataHandler():
                 fname, "XLSXs/Residential Damages.xlsx"))
 
     def write_intangible_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of intangible damages
+        """ Write files containing breakdown of intangible damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         dataset = [
             ["Address", "Current SOP (AEP %)", "Average Annual Damage (£)", "Lifetime Damage (£)"]]
@@ -1467,12 +1385,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Intangible Damages.xlsx"))
 
     def write_mh_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of mental health damages
+        """ Write files containing breakdown of mental health damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
-        dataset = [["Address", "Average Annual Damage (£)", "Lifetime Damage (£)"] + [
-            "{}% AEP Damage (£)".format(round(100/rp, 2)) for rp in self.return_periods]]
+        dataset = [["Address", "Average Annual Damage (£)", "Lifetime Damage (£)"] + [f"{round(100/rp, 2)}% AEP Damage (£)" for rp in self.return_periods]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1493,12 +1413,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Mental Health Damages.xlsx"))
 
     def write_vehicle_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of vehicle damages
+        """ Write files containing breakdown of vehicular damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in 
         """
         # Table headings
-        dataset = [["Address", "Average Annual Damage", "Lifetime Damage (£)"] + [
-            "{}% AEP Damage (£)".format(round(100/rp, 2)) for rp in self.return_periods]]
+        dataset = [["Address", "Average Annual Damage", "Lifetime Damage (£)"] + [f"{round(100/rp, 2)}% AEP Damage (£)" for rp in self.return_periods]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1519,12 +1441,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Vehicle Damages.xlsx"))
 
     def write_evac_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of evacuation damages
+        """ Write files containing evacuation damages
+
+        Args:
+            fname (str): Location of results folders           
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
-        dataset = [["Address", "Average Annual Damage (£)", "Lifetime Damage (£)"] + [
-            "{}% AEP Damage (£)".format(round(100/rp, 2)) for rp in self.return_periods]]
+        dataset = [["Address", "Average Annual Damage (£)", "Lifetime Damage (£)"] + [f"{round(100/rp, 2)}% AEP Damage (£)" for rp in self.return_periods]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1545,8 +1469,11 @@ class DetailedDataHandler():
                 fname, "XLSXs/Evacuation Damages.xlsx"))
 
     def write_non_res_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of non-residential damages
+        """ Write files containing breakdown of non-residential damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [
@@ -1555,8 +1482,7 @@ class DetailedDataHandler():
             # Add cap-related headings
             dataset[0] += [
                 "Capped Average Annual Damage (£)", "Capped Lifetime Damage (£)"]
-        dataset[0] += ["{}% AEP Damage (£)".format(round(100/rp, 2))
-                       for rp in self.return_periods]
+        dataset[0] += [f"{round(100/rp, 2)}% AEP Damage (£)"for rp in self.return_periods]
 
         # Main data
         for i in range(self.clean_non_res_count):
@@ -1581,12 +1507,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Non-Residential Damages.xlsx"))
 
     def write_res_benefits(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of residential benefits
+        """ Write files containing breakdown of residential benefits
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
-        dataset = [["Address"] + ["{}% AEP Benefit (£)".format(
-            round(100/rp, 2)) for rp in self.return_periods[1::]]]
+        dataset = [["Address"] + [f"{round(100/rp, 2)}% AEP Benefit (£)" for rp in self.return_periods[1::]]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1608,8 +1536,11 @@ class DetailedDataHandler():
                 fname, "XLSXs/Residential Benefits.xlsx"))
 
     def write_intangible_benefits(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of intangible benefits
+        """ Write files containing breakdown of intangible benefits
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [
@@ -1637,12 +1568,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Intangible Benefits.xlsx"))
 
     def write_mh_benfits(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of mental health benefits
+        """ Write files containing breakdown of mental health benefits
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
-        dataset = [["Address"] + ["{}% AEP Benefit (£)".format(
-            round(100/rp, 2)) for rp in self.return_periods[1::]]]
+        dataset = [["Address"] + [f"{round(100/rp, 2)}% AEP Benefit (£)" for rp in self.return_periods[1::]]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1664,12 +1597,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Mental Health Benefits.xlsx"))
 
     def write_vehicle_benefits(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of vehicle benefits
-        """
+        """ Write files containing breakdown of vehicular benefits
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
+        """ 
         # Table headings
-        dataset = [["Address"] + ["{}% AEP Benefit (£)".format(
-            round(100/rp, 2)) for rp in self.return_periods[1::]]]
+        dataset = [["Address"] + [f"{round(100/rp, 2)}% AEP Benefit (£)" for rp in self.return_periods[1::]]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1691,12 +1626,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Vehicle Benefits.xlsx"))
 
     def write_evac_benefits(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of evacuation benefits
+        """ Write files containing breakdown of evacuation benefits
+
+        Args:
+            fname (str): Location of results folders    
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
-        dataset = [["Address"] + ["{}% AEP Benefit (£)".format(
-            round(100/rp, 2)) for rp in self.return_periods[1::]]]
+        dataset = [["Address"] + [f"{round(100/rp, 2)}% AEP Benefit (£)" for rp in self.return_periods[1::]]]
 
         # Main data
         for i in range(self.clean_res_count):
@@ -1718,12 +1655,14 @@ class DetailedDataHandler():
                 fname, "XLSXs/Evacuation Benefits.xlsx"))
 
     def write_non_res_benefits(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of non-residential benefits
+        """ Write files containing breakdown of non-residential benefits 
+        
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
-        dataset = [["Address"] + ["{}% AEP Benefit (£)".format(
-            round(100/rp, 2)) for rp in self.return_periods[1::]]]
+        dataset = [["Address"] + [f"{round(100/rp, 2)}% AEP Benefit (£)" for rp in self.return_periods[1::]]]
 
         # Main data
         for i in range(self.clean_non_res_count):
@@ -1750,9 +1689,10 @@ class DetailedDataHandler():
     """
 
     def save(self, fname: str) -> None:
-        """
-        Write json .trit file
-        Custom encoder needed to convert np ndarrays 
+        """ Write currently loaded appraisal to .trit file
+
+        Args:
+            fname (str): Filename of file to be written
         """
         with open(f"{fname}.trit", "w") as f:
             json.dump(self.__dict__, f, cls=utils.NumpyEncoder)

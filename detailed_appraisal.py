@@ -4,6 +4,7 @@ UI widget for detailed appraisals performed by Triton FAS
 Angus Toms
 12 05 2021
 """
+import csv
 import json
 import os
 from functools import partial
@@ -12,16 +13,17 @@ from typing import List, Tuple
 from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QDoubleValidator, QIntValidator
 from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog,
-                             QDialogButtonBox, QFileDialog, QFormLayout, QGridLayout,
-                             QGroupBox, QHBoxLayout, QHeaderView, QLabel,
-                             QLineEdit, QMessageBox, QPushButton, QRadioButton,
-                             QScrollArea, QSpinBox, QTableWidget,
+                             QDialogButtonBox, QFileDialog, QFormLayout,
+                             QGridLayout, QGroupBox, QHBoxLayout, QHeaderView,
+                             QLabel, QLineEdit, QMessageBox, QPushButton,
+                             QRadioButton, QScrollArea, QSpinBox, QTableWidget,
                              QTableWidgetItem, QTabWidget, QVBoxLayout,
                              QWidget)
 
 import const
 import utils
 from detailed_datahandler import DetailedDataHandler
+from detailed_appraisal_utils import *
 
 """
 ####################
@@ -664,14 +666,12 @@ class ResidentialTab(QWidget):
         ground_level = self.db.res_ground_levels[index]
 
         # Update labels
-        self.easting_labels[index].setText("Easting: {}".format(easting))
-        self.northing_labels[index].setText("Northing: {}".format(northing))
-        self.address_labels[index].setText("Address: {}".format(address))
-        self.town_labels[index].setText("Town: {} - {}".format(town, postcode))
-        self.mcm_labels[index].setText(
-            "MCM Code: {} - {}".format(mcm, utils.get_res_mcm(mcm)))
-        self.ground_level_labels[index].setText(
-            "Ground Level: {}".format(ground_level))
+        self.easting_labels[index].setText(f"Easting: {easting}")
+        self.northing_labels[index].setText(f"Northing: {northing}")
+        self.address_labels[index].setText(f"Address: {address}")
+        self.town_labels[index].setText(f"Town: {town} - {postcode}")
+        self.mcm_labels[index].setText(f"MCM Code: {mcm} - {const.res_mcm[mcm]}")
+        self.ground_level_labels[index].setText(f"Ground Level: {ground_level}")
 
     def display_props(self) -> None:
         """
@@ -699,24 +699,17 @@ class ResidentialTab(QWidget):
             return
 
         # Write over old labels
-        self.easting_labels = [QLabel("Easting: {}".format(i))
-                               for i in eastings]
-        self.northing_labels = [
-            QLabel("Northing: {}".format(i)) for i in northings]
-        self.address_labels = [QLabel("Address: {}".format(i))
-                               for i in addresses]
-        self.town_labels = [QLabel(
-            "Town: {} - {}".format(towns[i], postcodes[i])) for i in range(prop_count)]
-        self.mcm_labels = [
-            QLabel("MCM Code: {} - {}".format(i, utils.get_res_mcm(i))) for i in mcms]
-        self.ground_level_labels = [
-            QLabel("Ground Level: {}".format(i)) for i in ground_levels]
+        self.easting_labels = [QLabel(f"Easting: {i}") for i in eastings]
+        self.northing_labels = [QLabel(f"Northing: {i}") for i in northings]
+        self.address_labels = [QLabel(f"Address: {i}") for i in addresses]
+        self.town_labels = [QLabel(f"Town: {towns[i]} - {postcodes[i]}") for i in range(prop_count)]
+        self.mcm_labels = [QLabel(f"MCM Code: {mcm} - {const.res_mcms[mcm]}") for mcm in mcms]
+        self.ground_level_labels = [QLabel(f"Ground Level: {i}") for i in ground_levels]
 
         # Write over other widgets
         self.edit_btns = [QPushButton("Edit") for _ in range(prop_count)]
         self.lyts = [QGridLayout() for _ in range(prop_count)]
-        self.groups = [QGroupBox("Residential Property {}".format(i+1))
-                       for i in range(prop_count)]
+        self.groups = [QGroupBox(f"Residential Property {i+1}") for i in range(prop_count)]
 
         for i in range(prop_count):
             # Label formatting
@@ -960,16 +953,13 @@ class NonResidentialTab(QWidget):
         ground_level = self.db.non_res_ground_levels[index]
 
         # Update labels
-        self.easting_labels[index].setText("Easting: {}".format(easting))
-        self.northing_labels[index].setText("Northing: {}".format(northing))
-        self.address_labels[index].setText("Address: {}".format(address))
-        self.town_labels[index].setText("Town: {} - {}".format(town, postcode))
-        self.mcm_labels[index].setText(
-            "MCM Code: {} - {}".format(mcm, utils.get_non_res_mcm(mcm)))
-        self.floor_area_labels[index].setText(
-            "Floor Area: {}".format(floor_area))
-        self.ground_level_labels[index].setText(
-            "Ground Level: {}".format(ground_level))
+        self.easting_labels[index].setText(f"Easting: {easting}")
+        self.northing_labels[index].setText(f"Northing: {northing}")
+        self.address_labels[index].setText(f"Address: {address}")
+        self.town_labels[index].setText(f"Town: {town} - {postcode}")
+        self.mcm_labels[index].setText(f"MCM Code: {mcm} - {const.non_res_mcm[mcm]}")
+        self.floor_area_labels[index].setText(f"Floor Area: {floor_area}")
+        self.ground_level_labels[index].setText(f"Ground Level: {ground_level}")
 
     def display_props(self) -> None:
         """
@@ -998,20 +988,13 @@ class NonResidentialTab(QWidget):
             return
 
         # Write over old labels
-        self.easting_labels = [QLabel("Easting: {}".format(i))
-                               for i in eastings]
-        self.northing_labels = [
-            QLabel("Northing: {}".format(i)) for i in northings]
-        self.address_labels = [QLabel("Address: {}".format(i))
-                               for i in addresses]
-        self.town_labels = [QLabel(
-            "Town: {} - {}".format(towns[i], postcodes[i])) for i in range(prop_count)]
-        self.mcm_labels = [
-            QLabel("MCM Code: {} - {}".format(i, utils.get_non_res_mcm(i))) for i in mcms]
-        self.floor_area_labels = [
-            QLabel("Floor Area: {}".format(i)) for i in floor_areas]
-        self.ground_level_labels = [
-            QLabel("Ground Level: {}".format(i)) for i in ground_levels]
+        self.easting_labels = [QLabel(f"Easting: {i}") for i in eastings]
+        self.northing_labels = [QLabel(f"Northing: {i}") for i in northings]
+        self.address_labels = [QLabel(f"Address: {i}") for i in addresses]
+        self.town_labels = [QLabel(f"Town: {towns[i]} - {postcodes[i]}") for i in range(prop_count)]
+        self.mcm_labels = [QLabel(f"MCM Code: {i} - {const.non_res_mcm[i]}") for i in mcms]
+        self.floor_area_labels = [QLabel(f"Floor Area: {i}") for i in floor_areas]
+        self.ground_level_labels = [QLabel(f"Ground Level: {i}") for i in ground_levels]
 
         # Write over other widgets
         self.edit_btns = [QPushButton("Edit") for _ in range(prop_count)]
@@ -1875,9 +1858,9 @@ class PropDatasetUpload(QDialog):
         Build QTableWidget() and insert into UI
         """
         if self.fname[1] == "CSVs (*.csv)":
-            self.table = utils.table_from_csv(self.fname)
+            self.table = table_from_csv(self.fname)
         else:
-            self.table = utils.table_from_dbf(self.fname)
+            self.table = table_from_dbf(self.fname)
 
     def select_columns(self) -> None:
         """
@@ -1951,9 +1934,9 @@ class NodeDatasetUpload(QDialog):
         Build QTableWidget() and insert into UI 
         """
         if self.fname[1] == "CSVs (*.csv)":
-            self.table = utils.table_from_csv(self.fname)
+            self.table = table_from_csv(self.fname)
         else:
-            self.table = utils.table_from_dbf(self.fname)
+            self.table = table_from_dbf(self.fname)
 
     def select_columns(self) -> None:
         """ 
@@ -2136,13 +2119,13 @@ class PreviewPropDataset(QDialog):
         headings = const.table_headings
 
         # Read and clean table
-        all_rows = utils.read_table_with_columns(
+        all_rows = read_table_with_columns(
             self.parent.columns,
             self.parent.table)
         valid_rows = [row for row in all_rows if utils.is_valid_res(
             row) or utils.is_valid_non_res(row)]
 
-        self.table = utils.table_from_list(headings, valid_rows)
+        self.table = table_from_list(headings, valid_rows)
 
     def update_prop_count(self) -> None:
         """
@@ -2153,11 +2136,13 @@ class PreviewPropDataset(QDialog):
             cell = self.table.item(row, 7)
             mcms.append(int(cell.text()))
 
+        res_count = sum([mcm in const.res_mcm for mcm in mcms])
         self.res_count_label.setText(
-            f"Residential Properties Found: {utils.res_count(mcms)}"
+            f"Residential Properties Found: {res_count}"
         )
+        non_res_count = sum([mcm in const.non_res_mcm for mcm in mcms])
         self.non_res_count_label.setText(
-            f"Non-Residential Properties Found: {utils.non_res_count(mcms)}"
+            f"Non-Residential Properties Found: {non_res_count}"
         )
 
 
@@ -2201,12 +2186,12 @@ class PreviewNodeDataset(QDialog):
         headings = ["Easting", "Northing"]
         for rp in self.parent.db.return_periods:
             headings += [f"{rp} year FE depth"]
-        all_rows = utils.read_table_with_columns(
+        all_rows = read_table_with_columns(
             self.parent.columns,
             self.parent.table)
         valid_rows = [row for row in all_rows if utils.is_valid_node(row)]
 
-        self.table = utils.table_from_list(headings, valid_rows)
+        self.table = table_from_list(headings, valid_rows)
 
     def update_node_count(self) -> None:
         """
@@ -4004,7 +3989,7 @@ class PropUploadWorker(QObject):
         Long-running property upload task
         """
         try:
-            props = utils.read_table_with_columns(self.columns, self.table)
+            props = read_table_with_columns(self.columns, self.table)
             prop_count = len(props)
             for i in range(prop_count):
                 self.appraisal.db.add_prop(props[i])
@@ -4035,7 +4020,7 @@ class NodeUploadWorker(QObject):
         Long-running node-upload task
         """
         try:
-            nodes = utils.read_table_with_columns(self.columns, self.table)
+            nodes = read_table_with_columns(self.columns, self.table)
             node_count = len(nodes)
             for i in range(node_count):
                 self.appraisal.db.add_node(nodes[i])

@@ -342,9 +342,8 @@ class DetailedDataHandler():
         self.res_towns[index] = prop_details[3]
         self.res_postcodes[index] = prop_details[4]
         self.res_mcms[index] = int(prop_details[5])
-
-        self.res_ground_levels[index] = float(
-            gl) if utils.is_not_blank(gl) else None
+        
+        self.res_ground_levels[index] = float(gl) if bool(gl and gl.strip()) else None
 
     def edit_non_res(self, prop_details: List[str], gl: str, index: int) -> None:
         """
@@ -365,8 +364,8 @@ class DetailedDataHandler():
         self.non_res_floor_areas[index] = float(prop_details[5])
         self.non_res_mcms[index] = int(prop_details[6])
 
-        self.non_res_ground_levels[index] = float(
-            gl) if utils.is_not_blank(gl) else None
+        # Check ground level is not blank        
+        self.non_res_ground_levels[index] = float(gl) if bool(gl and gl.strip()) else None
 
     def edit_node(self, node_details: List[str], index: int) -> None:
         """

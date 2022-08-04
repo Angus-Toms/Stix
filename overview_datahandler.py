@@ -1,5 +1,5 @@
 """
-Data handling class for overview appraisals performed by Triton FAS 
+Data handling class for overview appraisals performed by Stix FAS 
 
 Angus Toms 
 14 06 2021

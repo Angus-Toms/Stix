@@ -1,5 +1,5 @@
 """ 
-UI widget for detailed appraisals performed by Triton FAS
+UI widget for detailed appraisals performed by Stix FAS
 
 Angus Toms
 12 05 2021
@@ -96,7 +96,7 @@ class DetailedAppraisal(QWidget):
         """ Load appraisal state from saved file
 
         Args:
-            fname (str): Saved .trit file
+            fname (str): Saved .stix file
         """
         if fname:
             # Only run if file is selected
@@ -1774,7 +1774,7 @@ class ResultsTab(QWidget):
                 "detailed", os.path.join(fname, "Notes"))
 
     def save_results(self) -> None:
-        """ Save appraisal to .trit file
+        """ Save appraisal to .Stix file
         """
         fname = utils.get_save_fname(self)
 
@@ -3973,7 +3973,7 @@ class JSONWriteWorker(QObject):
         Long-running JSON-writing task
         """
         try:
-            with open(f"{self.fname}.trit", "w") as f:
+            with open(f"{self.fname}.Stix", "w") as f:
                 json.dump(self.appraisal.db.__dict__,
                           f, cls=utils.NumpyEncoder)
 
@@ -3981,8 +3981,8 @@ class JSONWriteWorker(QObject):
             self.error.emit(e)
 
             # Delete half-written results file
-            if os.path.exists(f"{self.fname}.trit"):
-                os.remove(f"{self.fname}.trit")
+            if os.path.exists(f"{self.fname}.Stix"):
+                os.remove(f"{self.fname}.Stix")
 
         # Execution finished
         self.finished.emit()

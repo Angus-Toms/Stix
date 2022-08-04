@@ -1,5 +1,5 @@
 """
-UI widget for the selection page of Triton FAS 
+UI widget for the selection page of Stix FAS 
 
 Angus Toms
 6 07 2021

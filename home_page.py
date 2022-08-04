@@ -1,5 +1,5 @@
 """
-UI widget for the home page of Triton FAS
+UI widget for the home page of Stix FAS
 
 Angus Toms 
 23 06 2021
@@ -8,15 +8,16 @@ import json
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QMessageBox, QPushButton,
-                             QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QLabel, QMessageBox,
+                             QPushButton, QVBoxLayout, QWidget)
 
 import utils
-
 # Appraisal imports
 from detailed_appraisal import DetailedAppraisal
 from initial_appraisal import InitialAppraisal
 from overview_appraisal import OverviewAppraisal
+
+from stix import Stix
 
 # Fonts
 title_font = QFont("", 16, QFont.Bold)
@@ -24,7 +25,13 @@ subtitle_font = QFont("", 14)
 
 
 class HomePage(QWidget):
-    def __init__(self, controller) -> None:
+    """ UI widget for the home page of Stix FAS
+    """
+    def __init__(self, controller: Stix) -> None:
+        """
+        Args:
+            controller (Stix): _description_
+        """
         super().__init__()
         self.controller = controller
 
@@ -34,12 +41,9 @@ class HomePage(QWidget):
         self.initUI()
 
     def initUI(self) -> None:
+        """ Initialise UI 
         """
-        Initialise UI 
-        """
-        title = QLabel(
-            "Welcome to Triton Flood Assessment Systems v2.0.1"
-        )
+        title = QLabel("Welcome to Stix Flood Assessment Systems v2.0.1")
         title.setFont(title_font)
         title.setAlignment(Qt.AlignCenter)
 
@@ -93,19 +97,19 @@ class HomePage(QWidget):
             self.controller.close()
 
     def get_appraisal_fname(self) -> str:
-        """ instantiate file dialog widget for user to enter select saved appraisal
+        """Instantiate file dialog widget for user to enter select saved appraisal
 
         Returns:
             str: Selected filename
         """
-        file_type = "Triton Appraisals (*.trit)"
+        file_type = "Stix Appraisals (*.Stix)"
 
         # Discard filetype
         return QFileDialog.getOpenFileName(self, "Select Saved Appraisal", "", file_type)[0]
 
     def load_appraisal(self) -> None:
         """
-        Load detailed appraisal from .trit and run
+        Load detailed appraisal from .Stix and run
         """
         fname = self.get_appraisal_fname()
 

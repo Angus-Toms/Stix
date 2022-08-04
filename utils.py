@@ -1,5 +1,5 @@
 """  
-Utility functions for Triton FAS
+Utility functions for Stix FAS
 
 Angus Toms 
 12 05 2021
@@ -13,13 +13,9 @@ import os
 import sys
 
 import numpy as np
-import pandas as pd
 import xlsxwriter
-from dbfread import DBF
-from PyQt5.QtWidgets import (QAbstractItemView, QFileDialog, QHBoxLayout,
-                             QHeaderView, QItemDelegate, QLineEdit,
-                             QStyledItemDelegate, QTableWidget,
-                             QTableWidgetItem, QWidget)
+from PyQt5.QtWidgets import (QFileDialog, QHBoxLayout, QItemDelegate, QLineEdit,
+                             QStyledItemDelegate, QWidget)
 
 import const
 

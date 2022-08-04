@@ -1,5 +1,5 @@
 """
-Texts for the help page of Triton FAS 
+Texts for the help page of Stix FAS 
 
 Angus Toms 23 07 2021
 """
@@ -14,14 +14,14 @@ headings = [
 
 # Initial appraisal tab
 initial_overview = """The Initial Appraisal is the easiest and fastest \
-appraisal performed by Triton Flood Assessment Systems, it requires \
+appraisal performed by Stix Flood Assessment Systems, it requires \
 very few data to complete and can generate results in less than 60 \
 seconds. Because of this, Initial Appraisals are only recommended \
 for initial assessments and pipeline projects. More detailed results \
-can be achieved with Triton’s Overview and Detailed Appraisals where \
+can be achieved with Stix's Overview and Detailed Appraisals where \
 data are available."""
 initial_step_by_step = """- Begin an appraisal by selecting the Start \
-Appraisal and then Start Initial Appraisal buttons from the Triton home \
+Appraisal and then Start Initial Appraisal buttons from the Stix home \
 page. \n\n- Select the Edit Flood Event Details button to the upper-left of \
 the page and enter the required information about your flood event in the \
 dialog box that has opened. \n\n- Select Save on the dialog box and check that \
@@ -35,10 +35,10 @@ damages. \n\n- To export your results, first select the Export Results button \
 found in the Advanced box. Select which data you would like to export and the \
 file formats you would like them to be exported to. Select Export and enter a \
 name when prompted. \n\n- To save your appraisal, select the Save Appraisal \
-button found in the Advanced box. Enter a name when prompted and a .trit file \
+button found in the Advanced box. Enter a name when prompted and a .Stix file \
 will be created containing all the information about your appraisal. If you \
 want to come back to your appraisal at any time, select the Open Appraisal \
-button on the Triton home page and select your saved .trit file."""
+button on the Stix home page and select your saved .Stix file."""
 initial_methodology_notes = """- A weighting is applied depending on whether \
 the catchment is in an urban or rural location. This takes into account costs \
 of emergency and recovery services and is based on data from the 2000 and \
@@ -68,14 +68,14 @@ initial_texts = [
 
 # Overview appraisal texts
 overview_overview = """The Overview Appraisal is the intermediate level \
-appraisal performed by Triton Flood Assessments. It provides more accurate \
+appraisal performed by Stix Flood Assessments. It provides more accurate \
 and representative results than the Initial Appraisal but requires more \
 data to complete. This also increases the time taken to perform appraisals.  \
 Overview Appraisals are recommended for strategic outline cases. More \
-detailed results can be achieved with Triton’s Detailed Appraisal where data \
+detailed results can be achieved with Stix's Detailed Appraisal where data \
 are available."""
 overview_step_by_step = """- Begin an appraisal by selecting the Start \
-Appraisal and then Start Overview Appraisal buttons from the Triton home \
+Appraisal and then Start Overview Appraisal buttons from the Stix home \
 page. \n\n- Select the Edit Flood Event details button to the upper-left \
 of the page and enter the required information about your flood event in \
 the dialog box that has opened. \n\n- Select Save on the dialog box and \
@@ -99,10 +99,10 @@ Export Results button found in the Advanced box. Select which data you \
 would like to export and the file formats you would like them to be \
 exported to. Select Export and enter a name when prompted. \n\n- To save \
 your appraisal, select the Save Appraisal button found in the Advanced \
-box. Enter a name when prompted and a .trit file will be created \
+box. Enter a name when prompted and a .Stix file will be created \
 containing all the information about your appraisal. If you want to \
 come back to your appraisal at any time, select the Open Appraisal \
-button on the Triton home page and select your saved .trit file."""
+button on the Stix home page and select your saved .Stix file."""
 overview_methodology_notes = """- To calculate a result, data is required \
 for every risk band of a given property type. If data is incomplete, \
 consider interpolating values to get a best-estimate. \n\n- The flooding \
@@ -133,15 +133,15 @@ overview_texts = [
 
 # Detailed appraisal texts
 detailed_overview = """The Detailed Appraisal is the most advanced and \
-comprehensive appraisal performed by Triton Flood Assessment Systems, it \
+comprehensive appraisal performed by Stix Flood Assessment Systems, it \
 can produce extensive property-by-property results in as little as 5 minutes. \
 Detailed Appraisals require a large amount of data including National \
 Receptors Dataset extracts and Flood Depths. Because of this, Detailed \
 Appraisals are recommended for Outline Business Cases. Broader results can \
-be achieved with Triton’s Overview and Initial Appraisals where data are \
+be achieved with Stix's Overview and Initial Appraisals where data are \
 not available. """
 detailed_step_by_step = """- Begin an appraisal by selecting the Start \
-Appraisal and then Start Detailed Appraisal buttons from the Triton home \
+Appraisal and then Start Detailed Appraisal buttons from the Stix home \
 page. \n\n- Select the Edit Flood Event Details button to the left of the \
 page and enter the required information about your flood event in the \
 General Flood Information and Damage Capping boxes that appear. \n\n- You \
@@ -152,10 +152,10 @@ required when uploading flood depth datasets and so must be saved before \
 doing so. \n\n- Select Save on the dialog box and check that the flood event \
 details have been updated. \n\n- Select the Upload Dataset button in the Upload \
 Properties box and select an extract of the National Receptors Dataset \
-covering the catchment. Triton supports the upload of .csv and .dbf \
+covering the catchment. Stix supports the upload of .csv and .dbf \
 files. \n\n- Your selected dataset will be displayed in a new window where you \
 can manually edit any entries to correct any errors that may be present. \n\n- \
-To allow Triton to correctly parse property information, you must select the \
+To allow Stix to correctly parse property information, you must select the \
 columns that contain vital information such as location, address, and floor \
 area. This can be done by selecting the Select Columns button at the top of \
 the new window. \n\n- To check you entries, select the Preview Properties Found \
@@ -169,14 +169,14 @@ Upload Property Manually button where you will be prompted to enter the \
 required information by hand. \n\n- All information can be edited after \
 upload by selecting the Edit buttons under the Residential and \
 Non-Residential tabs. \n\n- Select the Upload Dataset button in the Upload \
-ASCII Grids box and select ASCII grid(s) covering the catchment. Triton \
+ASCII Grids box and select ASCII grid(s) covering the catchment. Stix \
 supports the upload of .asc files. \n\n- Uploaded grids can now be viewed \
 under the ASCII Grids tab. \n\n- You can upload datasets as many times as \
 needed. \n\n- Select the Upload Dataset button in the Upload Flood Event \
-Shapefiles box. Triton supports the upload of .csv and .dbf files. \n\n- \
+Shapefiles box. Stix supports the upload of .csv and .dbf files. \n\n- \
 Your selected dataset will be displayed in a new window where you can \
 manually edit any entries to correct any errors that may be present. \
-\n\n- To allow Triton to correctly parse Flood Depths you must select the \
+\n\n- To allow Stix to correctly parse Flood Depths you must select the \
 columns that contain vital information. This can be done by selecting \
 the Select Columns button at the top of the new window. \n\n- The return \
 periods used in a Flood Depth shapefile must match those entered earlier. \
@@ -210,10 +210,10 @@ results, first select the Export Results button found in the Advanced box. \
 Select which data you would like to export and the file formats you would \
 like them to be exported to. Select Export and enter a name when \
 prompted. \n\n- To save your appraisal, select the Save Appraisal button \
-found in the Advanced box. Enter a name when prompted and a .trit file will \
+found in the Advanced box. Enter a name when prompted and a .Stix file will \
 be created containing all the information about your appraisal. If you want \
 to come back to your appraisal at any time, select the Open Appraisal button \
-on the Triton home page and select your saved .trit file."""
+on the Stix home page and select your saved .Stix file."""
 detailed_methodology_notes = """- This method checks if the lifetime damage \
 for a property exceeds the average property value of the catchment, if damage \
 capping is enabled then exceeding lifetime damages will be capped. \n\n- \
@@ -245,12 +245,12 @@ detailed_texts = [
 ]
 
 faq_questions = [
-    """Who can use Triton Flood Assessment Systems?""",
-    """I have questions / feedback / comments about Triton Flood Assessment \
+    """Who can use Stix Flood Assessment Systems?""",
+    """I have questions / feedback / comments about Stix Flood Assessment \
 Systems. What do I do? """
 ]
 faq_answers = [
-    """Anyone. Triton may be used for personal or commercial use and will \
+    """Anyone. Stix may be used for personal or commercial use and will \
 remain free for all to use forever. """,
     """Message the developer or submit a pull request to the GitHub page. The \
 developer can be reached at angus.toms@icloud.com or \

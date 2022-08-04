@@ -1,5 +1,5 @@
 """
-UI widget for the help page of Triton FAS
+UI widget for the help page of Stix FAS
 
 Angus Toms
 22 07 2021
@@ -29,12 +29,11 @@ class HelpPage(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Triton v2.0.1 - Help")
+        self.setWindowTitle("Stix v2.0.1 - Help")
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        Initialise UI
+        """ Initialise UI
         """
         tabs = QTabWidget()
 

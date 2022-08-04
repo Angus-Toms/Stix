@@ -1,5 +1,5 @@
 """
-Data handling class for detailed appraisals performed by Triton FAS 
+Data handling class for detailed appraisals performed by Stix FAS 
 
 Angus Toms
 12 05 2021  
@@ -1689,10 +1689,10 @@ class DetailedDataHandler():
     """
 
     def save(self, fname: str) -> None:
-        """ Write currently loaded appraisal to .trit file
+        """ Write currently loaded appraisal to .Stix file
 
         Args:
             fname (str): Filename of file to be written
         """
-        with open(f"{fname}.trit", "w") as f:
+        with open(f"{fname}.Stix", "w") as f:
             json.dump(self.__dict__, f, cls=utils.NumpyEncoder)

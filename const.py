@@ -1,5 +1,5 @@
 """  
-Constants and direct damages for Triton FAS
+Constants and direct damages for Stix FAS
 
 Angus Toms 
 12 05 2021
@@ -12,8 +12,7 @@ import sys
 
 
 def csv_to_dict(fname: str) -> Dict[int, List]:
-    """
-    Read .csv into dictionary
+    """ Read .csv into dictionary
     First row element added as key, rest of row added as value
     """
     with open(fname) as csv_file:
@@ -23,8 +22,7 @@ def csv_to_dict(fname: str) -> Dict[int, List]:
 
 
 def csv_to_list(fname: str) -> List[List]:
-    """
-    Read .csv into 2d list
+    """ Read .csv into 2d list
     """
     with open(fname) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -33,8 +31,7 @@ def csv_to_list(fname: str) -> List[List]:
 
 
 def get_resource_path(fname: str) -> str:
-    """
-    Translate asset paths to useable format for pyinstaller
+    """ Translate asset paths to useable format for pyinstaller
     """
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, fname)

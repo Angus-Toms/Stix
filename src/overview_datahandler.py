@@ -2,10 +2,11 @@ import os
 from typing import List
 
 import const
+from datahandler import DataHandler
 import utils
 
 
-class OverviewDataHandler():
+class OverviewDataHandler(DataHandler):
     """ Methods for the upload / storage / deletion / editing / processing and saving of
     data used in Overview Appraisals
     """

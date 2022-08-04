@@ -11,8 +11,6 @@ from detailed_appraisal import DetailedAppraisal
 from initial_appraisal import InitialAppraisal
 from overview_appraisal import OverviewAppraisal
 
-from stix import Stix
-
 # Fonts
 title_font = QFont("", 16, QFont.Bold)
 subtitle_font = QFont("", 14)
@@ -21,7 +19,7 @@ subtitle_font = QFont("", 14)
 class HomePage(QWidget):
     """ UI widget for the home page of Stix FAS
     """
-    def __init__(self, controller: Stix) -> None:
+    def __init__(self, controller) -> None:
         """
         Args:
             controller (Stix): Main QWindow which home page is placed into
@@ -37,7 +35,7 @@ class HomePage(QWidget):
     def initUI(self) -> None:
         """ Initialise UI 
         """
-        title = QLabel("Welcome to Stix Flood Assessment Systems v2.0.1")
+        title = QLabel("Welcome to Stix Flood Assessment Systems v2.0.2")
         title.setFont(title_font)
         title.setAlignment(Qt.AlignCenter)
 

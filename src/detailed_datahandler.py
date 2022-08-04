@@ -6,15 +6,17 @@ from typing import List
 
 import numpy as np
 from PyQt5.QtWidgets import QTableWidget
+from datahandler import DataHandler
 
 import utils 
 
-class DetailedDataHandler():
+class DetailedDataHandler(DataHandler):
     """
     Methods for the upload / storage / deletion / editing / processing and saving of
     data used in Detailed Appraisals
     """
     def __init__(self) -> None:
+        super().__init__()
         # Residential information
         self.res_eastings = []
         self.res_northings = []

@@ -1,9 +1,3 @@
-"""
-Main 
-
-Angus Toms 
-22 06 2021
-"""
 from PyQt5.QtWidgets import (
     QAction, QApplication, QMainWindow, QMenu, QMenuBar, QMessageBox, QStackedWidget, QWidget)
 from PyQt5.QtCore import Qt
@@ -16,8 +10,11 @@ from selection_page import SelectionPage
 
 
 class Stix(QMainWindow):
+    """ Parent GUI widget for Stix FAS
+    """
     def __init__(self) -> None:
         super().__init__()
+        
         self.stack = QStackedWidget()
         # Menu bar action fields
         self.save_action = QAction("Save Appraisal", self)
@@ -92,7 +89,7 @@ class Stix(QMainWindow):
         bar.addMenu(help_menu)
 
     def add_page(self, widget: QWidget, index: int) -> None:
-        """ Add QWidget to stack at specified indec
+        """ Add QWidget to stack at specified index
 
         Args:
             widget (QWidget): Widget to add
@@ -117,11 +114,11 @@ class Stix(QMainWindow):
 
         # Update window title
         page_titles = {
-            0: "Stix v2.0.1 - Home",
-            1: "Stix v2.0.1 - Appraisal Selection",
-            2: "Stix v2.0.1 - Initial Appraisal",
-            3: "Stix v2.0.1 - Overview Appraisal",
-            4: "Stix v2.0.1 - Detailed Appraisal"
+            0: "Stix v2.0.2 - Home",
+            1: "Stix v2.0.2 - Appraisal Selection",
+            2: "Stix v2.0.2 - Initial Appraisal",
+            3: "Stix v2.0.2 - Overview Appraisal",
+            4: "Stix v2.0.2 - Detailed Appraisal"
         }
         self.setWindowTitle(page_titles[index])
 
@@ -203,10 +200,10 @@ def main() -> None:
     from utils import get_resource_path
     app = QApplication(sys.argv)
     # Create and set app icon
-    app.setWindowIcon(QIcon(get_resource_path("assets/Stix.png")))
+    app.setWindowIcon(QIcon(get_resource_path("assets/stix.png")))
 
-    Stix = Stix()
-    Stix.showMaximized()
+    stix = Stix()
+    stix.showMaximized()
 
     app.exec_()
 

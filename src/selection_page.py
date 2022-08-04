@@ -10,7 +10,6 @@ from initial_appraisal import InitialAppraisal
 from overview_appraisal import OverviewAppraisal
 from detailed_appraisal import DetailedAppraisal
 
-from stix import Stix
 
 # Fonts
 title_font = QFont("", weight=QFont.Bold)
@@ -20,7 +19,7 @@ class SelectionPage(QWidget):
     """ UI widget for the selection page of Stix FAS  
 
     """
-    def __init__(self, controller: Stix) -> None: 
+    def __init__(self, controller) -> None: 
         """ 
         Args:
             controller (Stix): Main QWindow which selection page is placed into

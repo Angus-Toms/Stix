@@ -1,16 +1,18 @@
 import json
 import os
 
-from PyQt5.QtCore import (QObject, Qt, pyqtSignal, QThread)
+from PyQt5.QtCore import QObject, Qt, QThread, pyqtSignal
+from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog,
-                             QFormLayout, QGridLayout, QGroupBox, QHBoxLayout, QHeaderView, QLabel, QMessageBox, QPushButton,
-                             QSpinBox, QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+                             QFormLayout, QGridLayout, QGroupBox, QHBoxLayout,
+                             QHeaderView, QLabel, QMessageBox, QPushButton,
+                             QSpinBox, QTableWidget, QTableWidgetItem,
+                             QTabWidget, QVBoxLayout, QWidget)
 
-import utils
 import const
+import utils
+from appraisal import Appraisal
 from overview_datahandler import OverviewDataHandler
-
-from stix import Stix
 
 """
 ####################
@@ -18,18 +20,16 @@ from stix import Stix
 ####################
 """
 
-class OverviewAppraisal(QWidget):
+class OverviewAppraisal(Appraisal):
     """ UI widget for Detailed Appraisals performed by Stix FAS
     """
-    def __init__(self, controller: Stix) -> None:
+    def __init__(self, controller) -> None:
         """ 
         Args:
             controller (Stix): QMainWindow that provides access to page switching methods 
         """
-        super().__init__()
-        self.controller = controller
-
         self.db = OverviewDataHandler()
+        super().__init__(controller, self.db)
 
         self.tabs = QTabWidget()
         self.entry_tab = EntryTab(self, self.db)
@@ -54,24 +54,6 @@ class OverviewAppraisal(QWidget):
         main_lyt = QVBoxLayout()
         main_lyt.addWidget(self.tabs)
         self.setLayout(main_lyt)
-
-    def return_home(self) -> None:
-        """ Leave overview appraisal widget
-        """
-        # Ask for confirmation
-        msgbox = QMessageBox(self)
-        msgbox.setWindowModality(Qt.WindowModal)
-        msgbox.setIcon(QMessageBox.Warning)
-        msgbox.setText("All unsaved results will be lost")
-        msgbox.setInformativeText("Do you want to proceed?")
-        msgbox.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
-        msgbox.setEscapeButton(QMessageBox.No)
-        msgbox.setDefaultButton(QMessageBox.Yes)
-        retval = msgbox.exec_()
-
-        if retval == QMessageBox.Yes:
-            # Exit appraisal
-            self.controller.select_page(0)
 
     def load_appraisal(self, fname: str) -> None:
         """ Load appraisal state from saved file
@@ -111,22 +93,6 @@ class OverviewAppraisal(QWidget):
             self.thread.finished.connect(self.entry_tab.reload_res_table)
             self.thread.finished.connect(self.entry_tab.reload_non_res_table)
             self.thread.finished.connect(self.results_tab.update_table)
-
-    def load_appraisal_error(self, e: Exception) -> None:
-        """ Display traceback of error incurred during appraisal load
-        
-        Args:
-            e (Exception): Error 
-        """
-        msgbox = QMessageBox(self)
-        msgbox.setWindowModality(Qt.WindowModal)
-        msgbox.setIcon(QMessageBox.Warning)
-        msgbox.setText("An error occured during while loading this appraisal")
-        msgbox.setDetailedText(f"Traceback: {e}")
-        msgbox.setStandardButtons(QMessageBox.Ok)
-        msgbox.setEscapeButton(QMessageBox.Ok)
-        msgbox.setDefaultButton(QMessageBox.Ok)
-        msgbox.exec_()
 
 
 """

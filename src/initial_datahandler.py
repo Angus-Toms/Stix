@@ -2,14 +2,17 @@ import os
 from typing import List
  
 import const
+from datahandler import DataHandler
 import utils
 
 
 
-class InitialDataHandler():
+class InitialDataHandler(DataHandler):
     """ Methods for the upload / storage / deletion / editing / processing and saving of data used in Initial Appraisals
     """
     def __init__(self) -> None:
+        super().__init__()
+        
         # General flood information
         self.prop_count = 1
         self.warning = "No Warning"

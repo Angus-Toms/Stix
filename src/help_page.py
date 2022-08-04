@@ -19,7 +19,7 @@ class HelpPage(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Stix v2.0.1 - Help")
+        self.setWindowTitle("Stix v2.0.2 - Help")
         self.initUI()
 
     def initUI(self) -> None:

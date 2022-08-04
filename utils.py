@@ -1,9 +1,4 @@
-"""  
-Utility functions for Stix FAS
 
-Angus Toms 
-12 05 2021
-"""
 import csv
 import json
 import math
@@ -25,8 +20,13 @@ LAYOUTS
 
 
 def centered_hbox(widget: QWidget) -> QHBoxLayout:
-    """
-    Centers widget in a stretched hbox  
+    """ Centers widget in a horizontal layout
+
+    Args:
+        widget (QWidget): Widget to be centered
+
+    Returns:
+        QHBoxLayout: Widget within horizontal layour
     """
     hbox = QHBoxLayout()
     hbox.addStretch()
@@ -37,8 +37,13 @@ def centered_hbox(widget: QWidget) -> QHBoxLayout:
 
 
 def centered_hbox_lyt(lyt: QHBoxLayout) -> QHBoxLayout:
-    """
-    Centered layout in a stretched hbox  
+    """ Centers layout in a horizontal layout
+    
+    Args:
+        lyt (QHBoxLayout): Layout to be centered 
+        
+    Returns:
+        QHBoxLayout: Layout centered within horizontal layout
     """
     hbox = QHBoxLayout()
     hbox.addStretch()
@@ -54,8 +59,14 @@ FILE DIALOGS
 
 
 def get_save_fname(parent: QWidget) -> str:
-    """
-    Run a save file name dialog, discarding filetype
+    """ Run a save file dialog box
+    
+    Args:
+        parent (QWidget): Widget from which to run dialog
+        
+    Returns:
+        str: Filename with file type discarded
+    
     """
     return QFileDialog.getSaveFileName(parent, "Select Save Location")[0]
 
@@ -65,9 +76,9 @@ def get_save_fname(parent: QWidget) -> str:
 """
 GENERAL
 """
+
 def is_valid_res(prop_details: List) -> bool:
-    """
-    Check whether property details entered are all valid.
+    """ Check whether property details entered are all valid.
     Entries must be able to be parsed to the following:
     - arg[0]: Easting (float)
     - arg[1]: Northing (float)
@@ -78,6 +89,12 @@ def is_valid_res(prop_details: List) -> bool:
     - arg[6]: Floor area 
     ** Don't need to actually test FA but it just makes everything a little easier later **
     - arg[7]: MCM code (int)
+    
+    Args:
+        prop_details (List): Details of property in the above order
+        
+    Returns:
+        bool: True if property is valid, False otherwise
     """
     # Test entry types
     expected_types = [float, float, str, str, str, str, None, int]
@@ -97,8 +114,7 @@ def is_valid_res(prop_details: List) -> bool:
 
 
 def is_valid_non_res(prop_details: List) -> bool:
-    """
-    Check whether property details entered are all valid. 
+    """ Check whether property details entered are all valid. 
     Entries must be able to be parsed to the following:
     - arg[0]: Easting (float)
     - arg[1]: Northing (float)
@@ -108,6 +124,12 @@ def is_valid_non_res(prop_details: List) -> bool:
     - arg[5]: Postcode (str)
     - arg[6]: Floor Area (float)
     - arg[7]: MCM code (int)
+    
+    Args:
+        prop_details (List): Details of property in the above order
+        
+    Returns:
+        bool: True if property is valid, False otherwise
     """
     # Test entry types
     expected_types = [float, float, str, str, str, str, float, int]
@@ -123,9 +145,14 @@ def is_valid_non_res(prop_details: List) -> bool:
 
 
 def is_valid_node(node_details: List) -> bool:
-    """
-    Test information submitted about a node 
-    All datapointa are depths or locations so should be floats
+    """ Test information submitted about a node 
+    All datapoints are depths or locations so should be floats
+    
+    Args:
+        node_details (List): Details of node
+        
+    Returns:
+        bool: True if node is valid, False otherwise
     """
     try:
         _ = [float(n) for n in node_details]
@@ -136,9 +163,14 @@ def is_valid_node(node_details: List) -> bool:
 
 
 def is_valid_ascii(ascii_details: List) -> bool:
-    """
-    Test information submitted about a node
+    """ Test information submitted about an ASCII grid
     All datapoints except fname should be floats
+    
+    Args:
+        ascii_details (List): Details of ASCII grid 
+        
+    Returns:
+        bool: True if grid is valid, False otherwise
     """
     try:
         [float(x) for x in ascii_details[1::]]
@@ -157,11 +189,9 @@ def get_resource_path(fname: str) -> str:
 
     return os.path.join(os.path.abspath('.'), fname)
 
-
 """
-INITIAL RESULTS
+TODO: MOVE FOLLOWING TO APPRAISAL SUPERCLASS 
 """
-
 
 def get_damage_per_prop(warning: str) -> List[float]:
     """

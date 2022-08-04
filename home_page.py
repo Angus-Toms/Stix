@@ -1,9 +1,3 @@
-"""
-UI widget for the home page of Stix FAS
-
-Angus Toms 
-23 06 2021
-"""
 import json
 
 from PyQt5.QtCore import Qt
@@ -30,7 +24,7 @@ class HomePage(QWidget):
     def __init__(self, controller: Stix) -> None:
         """
         Args:
-            controller (Stix): _description_
+            controller (Stix): Main QWindow which home page is placed into
         """
         super().__init__()
         self.controller = controller

@@ -1,16 +1,14 @@
-"""
-Data handling class for initial appraisals performed by Stix FAS
-
-Angus Toms
-14 06 2021
-"""
 import os
 from typing import List
  
 import const
 import utils
 
+
+
 class InitialDataHandler():
+    """ Methods for the upload / storage / deletion / editing / processing and saving of data used in Initial Appraisals
+    """
     def __init__(self) -> None:
         # General flood information
         self.prop_count = 1
@@ -51,13 +49,12 @@ class InitialDataHandler():
         self.lower_benefit = 0
         self.upper_benefit = 0
 
-    """
-    GENERAL METHODS
-    """
 
-    def get_pre_existing_datapoints(self) -> None:
-        """
-        Get 2d list of datapoints for pre-exisitng damages to be displayed in results breakdown
+    def get_pre_existing_datapoints(self) -> List[List]:
+        """ Return exisiting damages for display in tables
+
+        Returns:
+            List[List]: 2D list of exisiting damage datapoints
         """
         dataset_1 = [[self.props_at_risk[i], self.lower_prop_damages[i],
                       self.upper_prop_damages[i]] for i in range(6)]
@@ -73,9 +70,11 @@ class InitialDataHandler():
 
         return dataset_1 + dataset_2
 
-    def get_major_datapoints(self) -> None:
-        """
-        Get 2d list of major datapoints to be displayed in summary tables
+    def get_major_datapoints(self) -> List[List]:
+        """ Return major datapoints for display in tables 
+        
+        Args:
+            List[List]: 2D list of major datapoints
         """
         dataset_1 = [[self.props_at_risk_after[i], self.lower_prop_damages_after[i],
                       self.upper_prop_damages_after[i]] for i in range(6)]
@@ -98,8 +97,7 @@ class InitialDataHandler():
     """
 
     def get_results(self) -> None:
-        """
-        Call results-calculating methods
+        """ Call results-calculating methods
         """
         # Update damage fields
         self.get_existing_damages()
@@ -108,8 +106,7 @@ class InitialDataHandler():
         self.get_benefits()
 
     def get_existing_damages(self) -> None:
-        """
-        Calculate existing damages arising from flood events
+        """ Calculate existing damages arising from flood events
         """
         # Get general flood info
         self.direct_damages = utils.get_damage_per_prop(self.warning)
@@ -145,8 +142,7 @@ class InitialDataHandler():
             self.upper_emergency_services_cost * self.health_df)
 
     def get_benefits(self) -> None:
-        """
-        Calculate benefits arising from flood intervention
+        """ Calculate benefits arising from flood intervention
         """
         # Get property counts
         self.props_at_risk_after = self.props_at_risk.copy()
@@ -188,8 +184,12 @@ class InitialDataHandler():
     """
 
     def export_results(self, fname: str, export_options: List[bool], file_formats: List[bool]) -> None:
-        """
-        Export arg results to arg fname
+        """ Write selected appraisal results in selected formats
+
+        Args:
+            fname (str): Location of results folders
+            export_options (List[bool]): Results to be saved
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Build directories
         self.build_folders(fname, file_formats)
@@ -207,8 +207,11 @@ class InitialDataHandler():
                 export_funcs[i](fname, file_formats)
 
     def build_folders(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Create results folders in save location
+        """ Write folders for results to be saved in
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         csv_path = os.path.join(fname, "CSVs")
         xlsx_path = os.path.join(fname, "XLSXs")
@@ -228,8 +231,11 @@ class InitialDataHandler():
                 os.mkdir(xlsx_path)
 
     def write_summary(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing summary of results
+        """ Write summary results
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [[None, "Properties at risk",
@@ -253,8 +259,11 @@ class InitialDataHandler():
                 fname, "XLSXs/Results Summary.xlsx"))
 
     def write_property_counts(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of properties damages in flood event
+        """ Write files containing breakdown of properties damaged in flood event
+        
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [[None, "Properties at risk pre-intervention",
@@ -278,8 +287,11 @@ class InitialDataHandler():
                 fname, "XLSXs/Property Counts.xlsx"))
 
     def write_existing_damages(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of existing damages
+        """ Write files containing breakdown of existing damages
+        
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [[None, "Properties at risk",

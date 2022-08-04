@@ -1,9 +1,3 @@
-"""
-UI widget for the selection page of Stix FAS 
-
-Angus Toms
-6 07 2021
-"""
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (
@@ -16,20 +10,28 @@ from initial_appraisal import InitialAppraisal
 from overview_appraisal import OverviewAppraisal
 from detailed_appraisal import DetailedAppraisal
 
+from stix import Stix
+
 # Fonts
 title_font = QFont("", weight=QFont.Bold)
 
 
 class SelectionPage(QWidget):
-    def __init__(self, controller) -> None:
+    """ UI widget for the selection page of Stix FAS  
+
+    """
+    def __init__(self, controller: Stix) -> None: 
+        """ 
+        Args:
+            controller (Stix): Main QWindow which selection page is placed into
+        """
         super().__init__()
         self.controller = controller
 
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        Initialise UI
+        """ Initialise UI
         """
         text = QLabel("Select which appraisal you would like to perform")
         text.setAlignment(Qt.AlignCenter)
@@ -90,8 +92,7 @@ class SelectionPage(QWidget):
         self.setLayout(main_lyt)
 
     def start_inital(self) -> None:
-        """
-        Instantiate and display new initial appraisal
+        """ Instantiate and display new initial appraisal
         """
         initial = InitialAppraisal(self.controller)
 
@@ -102,8 +103,7 @@ class SelectionPage(QWidget):
         self.controller.select_page(2)
 
     def start_overview(self) -> None:
-        """
-        Instantiate and diplsay new overview appraisal
+        """ Instantiate and display new overview appraisal
         """
         overview = OverviewAppraisal(self.controller)
 
@@ -114,8 +114,7 @@ class SelectionPage(QWidget):
         self.controller.select_page(3)
 
     def start_detailed(self) -> None:
-        """
-        Instantiate and display new detailed appraisal
+        """ Instantiate and display new detailed appraisal
         """
         detailed = DetailedAppraisal(self.controller)
 
@@ -126,7 +125,6 @@ class SelectionPage(QWidget):
         self.controller.select_page(4)
 
     def return_home(self) -> None:
-        """
-        Leave selection page widget
+        """ Leave selection page widget
         """
         self.controller.select_page(0)

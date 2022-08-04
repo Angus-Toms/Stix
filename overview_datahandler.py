@@ -1,9 +1,3 @@
-"""
-Data handling class for overview appraisals performed by Stix FAS 
-
-Angus Toms 
-14 06 2021
-"""
 import os
 from typing import List
 
@@ -12,6 +6,9 @@ import utils
 
 
 class OverviewDataHandler():
+    """ Methods for the upload / storage / deletion / editing / processing and saving of
+    data used in Overview Appraisals
+    """
     def __init__(self) -> None:
         # General flood information
         self.prop_count = 1
@@ -108,28 +105,24 @@ class OverviewDataHandler():
         self.lower_benefit = 0
         self.upper_benefit = 0
 
-    """
-    GENERAL METHODS
-    """
-
     def remove_res_double_count(self) -> None:
-        """
-        Remove double count from cumulative res props
+        """ Remove double count from cumulative res props
         """
         self.res_counts = [self.cumulative_res_counts[0]] + [
             self.cumulative_res_counts[i] - self.cumulative_res_counts[i-1] for i in range(1, 7)]
 
     def remove_non_res_double_count(self) -> None:
-        """
-        Remove double count from cumulative non res floor areas
+        """ Remove double count from cumulative non res floor areas
         """
         for i in range(len(self.cumulative_non_res_counts)):
             self.non_res_counts[i] = [self.cumulative_non_res_counts[i][0]] + [
                 self.cumulative_non_res_counts[i][j] - self.cumulative_non_res_counts[i][j-1] for j in range(1, 7)]
 
     def get_major_datapoints(self) -> List[List]:
-        """
-        Get 2d list of major datapoints to be displayed in summary tables
+        """ Return major datapoints for display in tables
+        
+        Returns:
+            List[List]: 2D list of major datapoints
         """
         dataset_1 = [
             [self.res_counts_after[i],
@@ -161,8 +154,7 @@ class OverviewDataHandler():
     """
 
     def get_results(self) -> None:
-        """
-        Call results-calculating methods
+        """ Call results-calculating methods
         """
         # Res damages and benefits
         self.get_existing_res_damages()
@@ -176,8 +168,7 @@ class OverviewDataHandler():
         self.get_totals()
 
     def get_existing_res_damages(self) -> None:
-        """
-        Calculate existing residential damages arising from flood events
+        """ Calculate existing residential damages arising from flood events
         """
         # Get general flood info
         self.direct_damages = utils.get_damage_per_prop(self.warning)
@@ -199,8 +190,7 @@ class OverviewDataHandler():
         self.upper_lifetime_res_damage = self.upper_annual_res_damage * self.df
 
     def get_res_benefits(self) -> None:
-        """
-        Calculate benefits arising from flood intervention
+        """ Calculate benefits arising from flood intervention
         """
         # Get property counts
         self.res_counts_after = self.res_counts.copy()
@@ -231,8 +221,7 @@ class OverviewDataHandler():
             self.upper_lifetime_res_damage_after
 
     def get_existing_non_res_damages(self) -> None:
-        """
-        Calculate existing non-residential damages arising from flood events
+        """ Calculate existing non-residential damages arising from flood events
         """
         # Damages
         for i in range(len(const.overview_non_res_mcm)):
@@ -257,8 +246,7 @@ class OverviewDataHandler():
         self.upper_lifetime_non_res_damage = self.upper_annual_non_res_damage * self.df
 
     def get_non_res_benefits(self) -> None:
-        """
-        Calculate benefits arising from flood intervention
+        """ Calculate benefits arising from flood intervention
         """
         # Get property counts
         # List comprehension required for shallow copy of 2d list
@@ -308,8 +296,7 @@ class OverviewDataHandler():
             self.lower_lifetime_non_res_damage_after
 
     def get_totals(self) -> None:
-        """
-        Sum residential and non-residential damages and benefits
+        """ Sum residential and non-residential damages and benefits
         """
         # Pre-intervention
         self.lower_damages = [self.lower_res_damages[i] +
@@ -365,8 +352,12 @@ class OverviewDataHandler():
     """
 
     def export_results(self, fname: str, export_options: List[bool], file_formats: List[bool]) -> None:
-        """
-        Export arg results to arg fname
+        """ Write selected appraisal results in selected formats
+
+        Args:
+            fname (str): Location of results folders
+            export_options (List[bool]): Results to be saved
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Build directories
         self.build_folders(fname, file_formats)
@@ -388,8 +379,11 @@ class OverviewDataHandler():
                 export_funcs[i](fname, file_formats)
 
     def build_folders(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Create results folders in save location
+        """ Write folders for results to be saved in
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         csv_path = os.path.join(fname, "CSVs")
         xlsx_path = os.path.join(fname, "XLSXs")
@@ -409,8 +403,11 @@ class OverviewDataHandler():
                 os.mkdir(xlsx_path)
 
     def write_summary(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing summary of results
+        """ Write summary results 
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [[None, "Residential Properties at risk",
@@ -446,8 +443,11 @@ class OverviewDataHandler():
                 fname, "XLSXs/Results Summary.xlsx"))
 
     def write_pre_intervention_res(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of pre-intervention residential damages
+        """ Write files containing breakdown on pre-intervention residential damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [
@@ -476,8 +476,11 @@ class OverviewDataHandler():
                 fname, "XLSXs/Pre-intervention res.xlsx"))
 
     def write_post_intervention_res(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write file containing breakdown of post-intervention residential damages
+        """ Write files containing breakdown of post-intervention residential damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [
@@ -508,8 +511,11 @@ class OverviewDataHandler():
                 fname, "XLSXs/Post-intervention res.xlsx"))
 
     def write_pre_intervention_non_res(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of pre-intervention non-residential damages
+        """ Write files containing breakdown on pre-intervention non-residential damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [["Return Period"]]
@@ -538,8 +544,11 @@ class OverviewDataHandler():
                 fname, "XLSXs/Pre-intervention non res.xlsx"))
 
     def write_post_intervention_non_res(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of post-intervention non-residential damages
+        """ Write files containing breakdown on post-intervention non-residential damages
+
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [["Return Period"]]
@@ -568,8 +577,11 @@ class OverviewDataHandler():
                 fname, "XLSXs/Post-intervention non res.xlsx"))
 
     def write_pre_intervention_property_counts(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of pre-intervention property counts
+        """ Write files containing breakdown of pre-intervention property counts
+        
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [[None, "Residential Properties at risk"] +
@@ -592,8 +604,11 @@ class OverviewDataHandler():
                 fname, "XLSXs/Pre-intervention property counts.xlsx"))
 
     def write_post_intervention_property_counts(self, fname: str, file_formats: List[bool]) -> None:
-        """
-        Write files containing breakdown of post-intervention property counts
+        """ Write files containing breakdown of post-intervention property counts
+        
+        Args:
+            fname (str): Location of results folders
+            file_formats (List[bool]): File formats for results to be written in
         """
         # Table headings
         dataset = [[None, "Residential Properties at risk"] +

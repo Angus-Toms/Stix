@@ -1,9 +1,3 @@
-"""
-Texts for the help page of Stix FAS 
-
-Angus Toms 23 07 2021
-"""
-
 # Headings
 headings = [
     "Overview",
@@ -229,7 +223,7 @@ event \n\n- 0.15m is added to capped depth data when calculating vehicular \
 damages to account for internal property threshold. \n\n- For evacuation \
 cost category see the Multi Coloured Handbook, Chapter 4. “Mid” is the \
 assumed default value if no other information is given."""
-detailed_caveats = """- Even this level of appraisal doesn’t take into account \
+detailed_caveats = """- Even this level of appraisal doesn't take into account \
 all factors. Delays, agriculture, ecosystem, and non-financial costs and \
 benefits have not been calculated and should be taken into account during \
 a complete appraisal. \n\n- All methods assume that average annual damage does \

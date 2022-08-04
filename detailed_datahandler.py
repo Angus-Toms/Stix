@@ -1,9 +1,3 @@
-"""
-Data handling class for detailed appraisals performed by Stix FAS 
-
-Angus Toms
-12 05 2021  
-"""
 import json
 import os
 import re
@@ -17,7 +11,7 @@ import utils
 
 class DetailedDataHandler():
     """
-    Methods for upload storage / deletion / editing / processing and saving of
+    Methods for the upload / storage / deletion / editing / processing and saving of
     data used in Detailed Appraisals
     """
     def __init__(self) -> None:
@@ -467,10 +461,6 @@ class DetailedDataHandler():
 
         self.ascii_count -= 1
 
-    """
-    GENERAL METHODS
-    """
-
     def get_res_elevations(self) -> None:
         """ Calculate ground level of residential properties from ASCII grids
         """
@@ -543,7 +533,6 @@ class DetailedDataHandler():
 
                     self.non_res_ground_levels[i] = self.raster_points[j][y_index][x_index]
 
-
     def is_blank(self, s: str) -> bool:
         """
         Test for empty or blank string
@@ -551,7 +540,7 @@ class DetailedDataHandler():
         return not (s and s.strip())
 
     def get_major_datapoints(self) -> None:
-        """ Get 2d list of major datapoints to be displayed in summary tables
+        """ Get 2D list of major datapoints to be displayed in summary tables
         """
         return [
             [self.total_average_res_damage, self.total_lifetime_res_damage, self.annual_res_damage_after, self.lifetime_res_damage_after, self.current_annual_res_benefit, self.current_lifetime_res_benefit],
@@ -1289,7 +1278,7 @@ class DetailedDataHandler():
 
         Args:
             fname (str): Location of results folders
-            file_formats (List[bool]): File format(s) for results in be written in
+            file_formats (List[bool]): File formats for results in be written in
         """
         # Table headings
         dataset = [["Damage Type", "Existing Annual Damage (£)", "Existing Lifetime Damage (£)", "Post-intervention Annual Damage (£)",

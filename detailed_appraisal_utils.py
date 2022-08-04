@@ -13,8 +13,13 @@ from PyQt5.QtWidgets import (QAbstractItemView, QHeaderView, QTableWidget,
 
 
 def table_from_csv(fname: List[str]) -> QTableWidget:
-    """
-    Build .csv data into a QTableWidget
+    """ Build QTableWidget from .csv file
+
+    Args:
+        fname (List[str]): Name and extension of file
+
+    Returns:
+        QTableWidget: Table widget containing .csv file's data
     """
     data = []
     # Read csv to 2d list
@@ -47,8 +52,13 @@ def table_from_csv(fname: List[str]) -> QTableWidget:
 
 
 def table_from_dbf(fname: List[str]) -> QTableWidget:
-    """      
-    Build .dbf data into a QTableWidget
+    """ Build QTableWidget from .dbf file
+
+    Args:
+        fname (List[str]): Name and extension of file
+
+    Returns:
+        QTableWidget: Table widget containing .dbf file's data
     """
     # Read dbf to 2d list
     df = pd.DataFrame(iter(DBF(fname[0])))
@@ -83,8 +93,14 @@ def table_from_dbf(fname: List[str]) -> QTableWidget:
 
 
 def table_from_list(headings: List[str], dataset: List[List[str]]) -> QTableWidget:
-    """
-    Create a table from a 2d list with custom headings 
+    """ Build QTableWidget from 2D list
+
+    Args:
+        headings (List[str]): Column headings for QTableWidget  
+        dataset (List[List[str]]): 2D list containing table content
+
+    Returns:
+        QTableWidget: Table widget containing data and headings
     """
     table = QTableWidget()
     row_count = len(dataset)
@@ -111,9 +127,15 @@ def table_from_list(headings: List[str], dataset: List[List[str]]) -> QTableWidg
     return table
 
 
-def read_table_with_columns(columns: List[int], table: QTableWidget) -> List[List]:
-    """
-    Read cells from table from given columns 
+def read_table_with_columns(columns: List[int], table: QTableWidget) -> List[List[str]]:
+    """ Read selected columns from QTableWidget into 2D list
+
+    Args:
+        columns (List[int]): Columns to be read in
+        table (QTableWidget): Table widget to read data from
+
+    Returns:
+        List[List[str]]: 2D list with data from table widget
     """
     dataset = []
     for r in range(table.rowCount()):

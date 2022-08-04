@@ -12,8 +12,7 @@ import sys
 
 
 def csv_to_dict(fname: str) -> Dict[int, List]:
-    """ Read .csv into dictionary
-    First row element added as key, rest of row added as value
+    """ Read .csv into dictionary. First row element added as key, rest of row added as value
     """
     with open(fname) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')

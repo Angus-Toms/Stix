@@ -92,7 +92,11 @@ class Stix(QMainWindow):
         bar.addMenu(help_menu)
 
     def add_page(self, widget: QWidget, index: int) -> None:
-        """ Add page to stacked widget
+        """ Add QWidget to stack at specified indec
+
+        Args:
+            widget (QWidget): Widget to add
+            index (int): Index for widget to be added at
         """
         # Remove widget currently in arg index
         current = self.stack.widget(index)
@@ -104,7 +108,10 @@ class Stix(QMainWindow):
         self.stack.insertWidget(index, widget)
 
     def select_page(self, index: int) -> None:
-        """ Move to given index of stacked widget   
+        """ Select page in stack
+
+        Args:
+            index (int): Index of page to be selected
         """
         self.stack.setCurrentIndex(index)
 
@@ -128,7 +135,10 @@ class Stix(QMainWindow):
             self.export_action.setEnabled(True)
 
     def new_appraisal_action(self, appraisal_level: QAction) -> None:
-        """ Start new appraisals from menu bar action
+        """ Sart new appraisal
+
+        Args:
+            appraisal_level (QAction): Level of appraisal selected
         """
         # Ask for confirmation if appraisal is already in process
         if self.stack.currentIndex() > 2:

@@ -1,9 +1,4 @@
-"""
-UI widget for initial appraisals performed by Stix FAS
 
-Angus Toms
-14 06 2021
-"""
 import json
 import os
 
@@ -16,9 +11,22 @@ import utils
 import const
 from initial_datahandler import InitialDataHandler
 
+from stix import Stix
+
+"""
+####################
+### MAIN  WIDGET ###
+####################
+"""
 
 class InitialAppraisal(QWidget):
-    def __init__(self, controller) -> None:
+    """ UI widget for initial appraisals performed by Stix FAS
+    """
+    def __init__(self, controller: Stix) -> None:
+        """ 
+        Args:
+            controller (Stix): 
+        """
         super().__init__()
         self.controller = controller
 
@@ -627,15 +635,15 @@ class JSONWriteWorker(QObject):
         Long-running JSON-writing task
         """
         try:
-            with open(f"{self.fname}.Stix", "w") as f:
+            with open(f"{self.fname}.stix", "w") as f:
                 json.dump(self.appraisal.db.__dict__, f)
 
         except Exception as e:
             self.error.emit(e)
 
             # Delete half-written results file
-            if os.path.exists(f"{self.fname}.Stix"):
-                os.remove(f"{self.fname}.Stix")
+            if os.path.exists(f"{self.fname}.stix"):
+                os.remove(f"{self.fname}.stix")
 
         # Execution finished
         self.finished.emit()

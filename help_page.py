@@ -1,9 +1,3 @@
-"""
-UI widget for the help page of Stix FAS
-
-Angus Toms
-22 07 2021
-"""
 from help_page_texts import (
     headings, initial_texts, overview_texts, detailed_texts, faq_questions, faq_answers)
 
@@ -18,14 +12,10 @@ import utils
 title_font = QFont("Arial", 14, weight=QFont.Bold)
 body_font = QFont("Arial", 13)
 
-"""
-#################### 
-####### MAIN #######
-####################
-"""
-
 
 class HelpPage(QDialog):
+    """ UI widget for the help page of Stix FAS
+    """
     def __init__(self):
         super().__init__()
 
@@ -67,15 +57,20 @@ class HelpPage(QDialog):
 
 
 class InitialTab(QWidget):
+    """ UI widget for the initial help tab
+    """
     def __init__(self, parent: HelpPage) -> None:
+        """ 
+        Args:
+            parent (HelpPage): Help page which tab is placed into
+        """
         super().__init__(parent)
         self.parent = parent
 
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        Initialise UI
+        """ Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()
@@ -113,15 +108,20 @@ class InitialTab(QWidget):
 
 
 class OverviewTab(QWidget):
+    """ UI widget for the overview help tab
+    """
     def __init__(self, parent: HelpPage) -> None:
+        """
+        Args:
+            parent (HelpPage): Help page which tab is placed into
+        """
         super().__init__(parent)
         self.parent = parent
 
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        Initialise UI
+        """ Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()
@@ -159,15 +159,20 @@ class OverviewTab(QWidget):
 
 
 class DetailedTab(QWidget):
+    """ UI widget for the detailed help tab
+    """
     def __init__(self, parent: HelpPage) -> None:
+        """ 
+        Args:
+            parent (HelpPage): Help page which tab is placed into
+        """
         super().__init__(parent)
         self.parent = parent
 
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        Initialise UI
+        """ Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()
@@ -205,15 +210,20 @@ class DetailedTab(QWidget):
 
 
 class FAQTab(QWidget):
+    """ UI widget for the FAQ tav
+    """
     def __init__(self, parent: HelpPage) -> None:
+        """ 
+        Args:
+            parent (HelpPage): Help page which tab is placed into
+        """
         super().__init__(parent)
         self.parent = parent
 
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        Initialise UI
+        """ Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()

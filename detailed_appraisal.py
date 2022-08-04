@@ -1,9 +1,3 @@
-""" 
-UI widget for detailed appraisals performed by Stix FAS
-
-Angus Toms
-12 05 2021
-"""
 import json
 import os
 from functools import partial
@@ -26,13 +20,13 @@ from detailed_appraisal_utils import *
 
 """
 ####################
-######## MAIN ######
+### MAIN  WIDGET ###
 ####################
 """
 
 
 class DetailedAppraisal(QWidget):
-    """ UI widget for Detailed Appraisals
+    """ UI widget for Detailed Appraisals performed by Stix FAS
     """
     def __init__(self, controller) -> None:
         super().__init__()
@@ -162,6 +156,11 @@ class UploadTab(QWidget):
     """ UI widget for the upload tab of the detailed appraisal
     """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (DetailedAppraisal): Appraisal which tab is placed into
+            db (DetailedDataHandler): Data handling class of current appraisal
+        """
         super().__init__()
 
         self.parent = parent
@@ -599,6 +598,11 @@ class ResidentialTab(QWidget):
     """ UI widget for the residential property tab of the detailed appraisal
     """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (DetailedAppraisal): Appraisal which tab is placed into
+            db (DetailedDataHandler): Data handling class of current appraisal
+        """
         super().__init__()
 
         self.parent = parent
@@ -891,6 +895,11 @@ class NonResidentialTab(QWidget):
         QWidget (_type_): _description_
     """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (DetailedAppraisal): Appraisal which tab is placed into
+            db (DetailedDataHandler): Data handling class of current appraisal
+        """
         super().__init__()
 
         self.parent = parent
@@ -1194,6 +1203,11 @@ class AsciiTab(QWidget):
     """ UI widget for the ASCII tab of the detailed appraisal 
     """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (DetailedAppraisal): Appraisal which tab is placed into
+            db (DetailedDataHandler): Data handling class of current appraisal
+        """
         super().__init__()
 
         self.parent = parent
@@ -1366,6 +1380,11 @@ class NodeTab(QWidget):
     """ UI widget for the node tab of the detailed appraisal
     """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (DetailedAppraisal): Appraisal which tab is placed into
+            db (DetailedDataHandler): Data handling class of current appraisal
+        """
         super().__init__()
         self.parent = parent
         self.db = db
@@ -1577,6 +1596,11 @@ class ResultsTab(QWidget):
     """ UI widget for the results tab of the detailed appraisal
     """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (DetailedAppraisal): Appraisal which tab is placed into
+            db (DetailedDataHandler): Data handling class of current appraisal
+        """
         super().__init__()
         self.parent = parent
         self.db = db

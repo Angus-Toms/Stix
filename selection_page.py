@@ -29,7 +29,7 @@ class SelectionPage(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel("Select which appraisal you would like to perform")
         text.setAlignment(Qt.AlignCenter)

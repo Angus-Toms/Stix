@@ -46,7 +46,7 @@ class OverviewAppraisal(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         self.tabs.addTab(self.entry_tab, "Entry")
         self.tabs.addTab(self.results_tab, "Results")
@@ -156,7 +156,7 @@ class EntryTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         # Flood event details Groupbox
         self.warning_label.setAlignment(Qt.AlignCenter)
@@ -405,7 +405,7 @@ class ResultsTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         # Results Groupbox
         get_results_btn = QPushButton("Generate Results")
@@ -582,7 +582,7 @@ class EditFloodDetails(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel("Edit General Flood Information below")
         text.setAlignment(Qt.AlignCenter)
@@ -657,7 +657,7 @@ class ResultsBreakdown(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel(
             "Here you can view a more advanced breakdown of appraisal results")
@@ -941,7 +941,7 @@ class ExportResults(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel("Select the data you would like to export")
         text.setAlignment(Qt.AlignCenter)

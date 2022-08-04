@@ -42,7 +42,7 @@ class Triton(QMainWindow):
 
     def initUI(self) -> None:
         """
-        UI Setup 
+        Initialise UI 
         """
         self.setCentralWidget(self.stack)
 

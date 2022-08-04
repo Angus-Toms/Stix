@@ -34,7 +34,7 @@ class HelpPage(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         tabs = QTabWidget()
 
@@ -76,7 +76,7 @@ class InitialTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()
@@ -122,7 +122,7 @@ class OverviewTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()
@@ -168,7 +168,7 @@ class DetailedTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()
@@ -214,7 +214,7 @@ class FAQTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         # Scroll area setup
         scroll_lyt = QVBoxLayout()

@@ -35,7 +35,7 @@ class HomePage(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup 
+        Initialise UI 
         """
         title = QLabel(
             "Welcome to Triton Flood Assessment Systems v2.0.1"
@@ -93,7 +93,7 @@ class HomePage(QWidget):
             self.controller.close()
 
     def get_appraisal_fname(self) -> str:
-        """ Instanciate file dialog widget for user to enter select saved appraisal
+        """ instantiate file dialog widget for user to enter select saved appraisal
 
         Returns:
             str: Selected filename

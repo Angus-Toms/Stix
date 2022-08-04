@@ -4,7 +4,6 @@ UI widget for detailed appraisals performed by Triton FAS
 Angus Toms
 12 05 2021
 """
-import csv
 import json
 import os
 from functools import partial
@@ -33,10 +32,7 @@ from detailed_appraisal_utils import *
 
 
 class DetailedAppraisal(QWidget):
-    """_summary_
-
-    Args:
-        QWidget (_type_): _description_
+    """ UI widget for Detailed Appraisals
     """
     def __init__(self, controller) -> None:
         super().__init__()
@@ -65,8 +61,7 @@ class DetailedAppraisal(QWidget):
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        UI Setup  
+        """ Initialise user interface  
         """
         self.tabs.addTab(self.upload_tab, "Upload")
         self.tabs.addTab(self.res_tab, "Residential Properties")
@@ -80,8 +75,7 @@ class DetailedAppraisal(QWidget):
         self.setLayout(main_lyt)
 
     def return_home(self) -> None:
-        """
-        Leave detailed appraisal widget
+        """ Close Detailed Appraisal widget
         """
         # Ask for confirmation
         msgbox = QMessageBox(self)
@@ -99,8 +93,10 @@ class DetailedAppraisal(QWidget):
             self.controller.select_page(0)
 
     def load_appraisal(self, fname: str) -> None:
-        """
-        Load database fields from arg fname 
+        """ Load appraisal state from saved file
+
+        Args:
+            fname (str): Saved .trit file
         """
         if fname:
             # Only run if file is selected
@@ -139,8 +135,10 @@ class DetailedAppraisal(QWidget):
             self.thread.finished.connect(self.node_tab.display_checks)
 
     def load_appraisal_error(self, e: Exception) -> None:
-        """
-        Display traceback if errors occur during execution of appraisal loading
+        """ Display error incurred during appraisal load
+        
+        Args:
+            e (Exception): Error 
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -161,6 +159,8 @@ class DetailedAppraisal(QWidget):
 
 
 class UploadTab(QWidget):
+    """ UI widget for the upload tab of the detailed appraisal
+    """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
         super().__init__()
 
@@ -200,8 +200,7 @@ class UploadTab(QWidget):
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        UI Setup  
+        """ Initialise UI
         """
         # Property Upload Groupbox
         prop_upload_group = QGroupBox("Upload Properties")
@@ -298,8 +297,7 @@ class UploadTab(QWidget):
         self.setLayout(main_lyt)
 
     def update_upload_counts(self) -> None:
-        """
-        Update labels displaying number of datapoints uploaded 
+        """ Update labels displaying number of datapoints uploaded 
         """
         self.res_count_label.setText(
             f"Residential Properties Uploaded: {self.db.res_count}")
@@ -311,8 +309,7 @@ class UploadTab(QWidget):
             f"Flood Shapefile Datapoints Uploaded: {self.db.node_count}")
 
     def upload_prop_manual(self) -> None:
-        """
-        Get all prop info from user, add to db if save button pressed 
+        """ Instantiate manual upload widget and add entries to data handler
         """
         popup = PropManualUpload(self)
 
@@ -329,17 +326,16 @@ class UploadTab(QWidget):
         self.parent.non_res_tab.display_props()
 
     def get_prop_fname(self) -> Tuple[str, str]:
-        """ Instanciate file dialog widget for user to select property/node dataset
+        """ Instantiate file dialog widget for user to select property dataset file
 
         Returns:
-            str: Selected filename and filetype, empty strings if dialog is closed before file is selected
+            Tuple[str, str]: Filename and filetype, empty strings if widget is closed before selection made
         """
         file_types = "CSVs (*.csv);;DBFs (*.dbf)"
         return QFileDialog.getOpenFileName(self, "Select Dataset", "", file_types)
 
     def upload_prop_dataset(self) -> None:
-        """
-        Get filename from user and instantiate dialog
+        """ Get property dataset file from user and run property upload widget 
         """
         fname = self.get_prop_fname()
 
@@ -380,8 +376,10 @@ class UploadTab(QWidget):
                     self.parent.non_res_tab.display_props)
 
     def prop_upload_error(self, e: Exception) -> None:
-        """
-        Display traceback if errors occur during execution of prop upload
+        """ Display traceback of error incurred during upload of property dataset
+
+        Args:
+            e (Exception): Error
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -394,14 +392,16 @@ class UploadTab(QWidget):
         msgbox.exec_()
 
     def prop_progress_update(self, progess_pct: float) -> None:
-        """
-        Update users on progress of long-running prop-upload task
+        """ Update user on progress of long-running prop-upload task
+
+        Args:
+            progess_pct (float): Percentage of task completed
         """
         self.prop_progress_label.setText(
             f"Upload progress: {round(progess_pct*100)}%")
 
     def get_ascii_fnames(self) -> List[str]:
-        """ Instanciate file dialog widget for user to select ascii grid(s)
+        """ Instantiate file dialog widget for user to select ASCII grid(s)
 
         Returns:
             List[str]: Selected filenames
@@ -412,8 +412,7 @@ class UploadTab(QWidget):
         return QFileDialog.getOpenFileNames(self, "Select ASCII Grids", "", file_types)[0]
 
     def upload_ascii(self) -> None:
-        """
-        Get ASCII filenames and upload to database
+        """ Get ASCII filenames and upload to database
         """
         fnames = self.get_ascii_fnames()
 
@@ -445,8 +444,11 @@ class UploadTab(QWidget):
         self.thread.finished.connect(self.parent.ascii_tab.display_asciis)
 
     def ascii_upload_error(self, e: Exception, fname: str) -> None:
-        """
-        Display traceback if errors occur during execution of ascii upload
+        """ Display traceback of error incurred during uplaod of ASCII grid
+
+        Args:
+            e (Exception): Error
+            fname (str): File, upload of which casued error
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -460,15 +462,16 @@ class UploadTab(QWidget):
         msgbox.exec_()
 
     def ascii_progress_update(self, progress_pct: float) -> None:
-        """
-        Update users on progress of long-running ASCII upload task
+        """ Update user on progress of long-running ASCII-upload task
+
+        Args:
+            progress_pct (float): Percentage of task completed
         """
         self.ascii_progress_label.setText(
             f"Upload progress: {round(progress_pct*100)}%")
 
     def upload_node_dataset(self) -> None:
-        """
-        Get filename from user and instantiate dialog 
+        """ Get property dataset file from user and run node upload widget 
         """
         fname = self.get_prop_fname()
 
@@ -508,8 +511,10 @@ class UploadTab(QWidget):
                     self.parent.node_tab.display_nodes)
 
     def node_upload_error(self, e: Exception) -> None:
-        """
-        Display traceback if errors occur during execution of node upload
+        """ Display traceback of error incurred during upload of node dataset
+
+        Args:
+            e (Exception): Error
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -522,15 +527,16 @@ class UploadTab(QWidget):
         msgbox.exec_()
 
     def node_progress_update(self, progress_pct: float) -> None:
-        """
-        Update users on progress of long-running node-upload task
+        """ Update user on progress of long-running node-upload task
+
+        Args:
+            progress_pct (float): Percentage of task completed
         """
         self.node_progress_label.setText(
             f"Upload progress: {round(progress_pct*100)}%")
 
     def update_event_details(self) -> None:
-        """
-        Reload display of flood information labels
+        """ Reload display of flood information tables
         """
         # Text updates
         self.event_type_label.setText(
@@ -563,8 +569,7 @@ class UploadTab(QWidget):
             self.non_res_cap_label.setDisabled(True)
 
     def edit_event_details(self) -> None:
-        """
-        Run the EditFloodDetails dialog
+        """ Run the EditFloodDetails dialog
         """
         popup = EditFloodDetails(self, self.db)
 
@@ -590,7 +595,9 @@ class UploadTab(QWidget):
             self.update_event_details()
 
 
-class ResidentialTab(QWidget):
+class ResidentialTab(QWidget): 
+    """ UI widget for the residential property tab of the detailed appraisal
+    """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
         super().__init__()
 
@@ -617,8 +624,7 @@ class ResidentialTab(QWidget):
         self.display_props()
 
     def initUI(self) -> None:
-        """
-        UI Setup  
+        """ Initialise UI  
         """
         text = QLabel(
             "Here you can select which residential properties you want to be included in your appraisal")
@@ -653,8 +659,10 @@ class ResidentialTab(QWidget):
         self.setLayout(main_lyt)
 
     def display_prop(self, index: int) -> None:
-        """
-        Reload display of single property 
+        """ Reload display of single residential property
+
+        Args:
+            index (int): Index of property to be reloaded
         """
         # Access property info from db
         easting = self.db.res_eastings[index]
@@ -674,8 +682,7 @@ class ResidentialTab(QWidget):
         self.ground_level_labels[index].setText(f"Ground Level: {ground_level}")
 
     def display_props(self) -> None:
-        """
-        Reload display of all uploaded props in scroll area
+        """ Reload displays of all uploaded properties in scroll area
         """
         # Remove all groupboxes currently in scroll area
         for i in reversed(range(self.scroll_area.count())):
@@ -746,16 +753,14 @@ class ResidentialTab(QWidget):
             self.scroll_area.addWidget(self.groups[i])
 
     def display_elevations(self) -> None:
-        """
-        Reload display of elevation labels, used after automatic elevation generation 
+        """ Reload display of elevation labels, used after automatic elevation generation 
         """
         for i in range(self.db.res_count):
             self.ground_level_labels[i].setText(
                 "Ground Level: {}".format(self.db.res_ground_levels[i]))
 
     def build_temp(self) -> None:
-        """
-        Add label if no properties are uploaded 
+        """ Add label if no properties are uploaded 
         """
         text = QLabel(
             "You haven't uploaded any residential properties yet\n\nAdd some from the Upload Tab to begin")
@@ -763,8 +768,10 @@ class ResidentialTab(QWidget):
         self.scroll_area.addWidget(text)
 
     def build_btns(self, prop_count: int) -> None:
-        """
-        Build and connect (de)select buttons if properties have been uploaded 
+        """ Build and connect (de)select buttons if residential properties have been uploaded 
+
+        Args:
+            prop_count (int): Total number of residential properties uploaded
         """
         # Remove all widgets currently in layouts
         for i in reversed(range(self.btn_lyt_1.count())):
@@ -785,15 +792,19 @@ class ResidentialTab(QWidget):
             self.elevations_btn.show()
 
     def select_groups(self, state: bool) -> None:
-        """
-        Set all groups to the arg checked state
+        """ Set all groups to the arg checked state
+
+        Args:
+            state (bool): True for checked, False for unchecked
         """
         for group in self.groups:
             group.setChecked(state)
 
     def edit_prop(self, index: int) -> None:
-        """
-        Edit details of property   
+        """ Run the EditResPropDetails widget for a single property
+
+        Args:
+            index (int): Index of property being edited
         """
         popup = EditResPropDetails(self, self.db, index)
 
@@ -812,8 +823,7 @@ class ResidentialTab(QWidget):
         self.parent.upload_tab.update_upload_counts()
 
     def get_elevations(self) -> None:
-        """
-        Get prop elevations from ASCII grids 
+        """ Get elevations for residential properties
         """
         # Ask for confirmation
         msgbox = QMessageBox(self)
@@ -856,8 +866,7 @@ class ResidentialTab(QWidget):
             self.display_elevations()
 
     def get_checks(self) -> None:
-        """
-        Find checked properties with valid ground level entries
+        """ Find checked residential properties with valid ground levels
         """
         checked_props = [group.isChecked() for group in self.groups]
         valid_gls = [gl is not None for gl in self.db.res_ground_levels]
@@ -868,7 +877,7 @@ class ResidentialTab(QWidget):
 
     def display_checks(self) -> None:
         """
-        Enable/Disable self.groups based on checks 
+        Enable/Disable groups based on checks 
         Used for reloading display after appraisal loads
         """
         for i in range(self.db.res_count):
@@ -876,6 +885,11 @@ class ResidentialTab(QWidget):
 
 
 class NonResidentialTab(QWidget):
+    """ UI widget for the non-residential property tab of the detailed appraisal
+
+    Args:
+        QWidget (_type_): _description_
+    """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
         super().__init__()
 
@@ -904,7 +918,7 @@ class NonResidentialTab(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup  
+        Initialise UI  
         """
         text = QLabel(
             "Here you can select which non-residential properties you want to be included in your appraisal")
@@ -939,8 +953,10 @@ class NonResidentialTab(QWidget):
         self.setLayout(main_lyt)
 
     def display_prop(self, index: int) -> None:
-        """
-        Update display of single property 
+        """ Reload display of single non-residential property
+
+        Args:
+            index (int): Index of property to be reloaded
         """
         # Access property info from db
         easting = self.db.non_res_eastings[index]
@@ -962,8 +978,7 @@ class NonResidentialTab(QWidget):
         self.ground_level_labels[index].setText(f"Ground Level: {ground_level}")
 
     def display_props(self) -> None:
-        """
-        Display all uploaded props in scroll area 
+        """ Reload diplsays of all uploaded properties in scroll area
         """
         # Remove all groupboxes currently in scroll area
         for i in reversed(range(self.scroll_area.count())):
@@ -1040,16 +1055,14 @@ class NonResidentialTab(QWidget):
             self.scroll_area.addWidget(self.groups[i])
 
     def display_elevations(self) -> None:
-        """
-        Reload display of elevation labels, used after automatic elevation generation
+        """ Reload display of elevation labels, used after automatic elevation generation
         """
         for i in range(self.db.non_res_count):
             self.ground_level_labels[i].setText(
                 "Ground Level: {}".format(self.db.non_res_ground_levels[i]))
 
     def build_temp(self) -> None:
-        """
-        Add label if no properties are uploaded
+        """ Add label if no properties are uploaded
         """
         text = QLabel(
             """You haven't uploaded any non-residential properties yet\n\nAdd some from the Upload Tab to begin""")
@@ -1057,8 +1070,10 @@ class NonResidentialTab(QWidget):
         self.scroll_area.addWidget(text)
 
     def build_btns(self, prop_count: int) -> None:
-        """
-        Build and connect (de)select buttons if properties have been uploaded 
+        """ Build and connect (de)select buttons if non-residential properties have been uploaded 
+
+        Args:
+            prop_count (int): Total number of non-residential properties uploaded
         """
         # Remove all widgets currently in property
         for i in reversed(range(self.btn_lyt_1.count())):
@@ -1079,15 +1094,19 @@ class NonResidentialTab(QWidget):
             self.elevations_btn.show()
 
     def select_groups(self, state: bool) -> None:
-        """
-        Set all groups to the arg checked state 
+        """ Set all groups to the arg checked state
+
+        Args:
+            state (bool): True for checked, False for unchecked
         """
         for group in self.groups:
             group.setChecked(state)
 
     def edit_prop(self, index: int) -> None:
-        """
-        Edit details of property
+        """ Run the EditNonResPropDetails widget for a single property
+        
+        Args:
+            index (int): Index of propety being edited
         """
         popup = EditNonResPropDetails(self, self.db, index)
 
@@ -1106,8 +1125,7 @@ class NonResidentialTab(QWidget):
         self.parent.upload_tab.update_upload_counts()
 
     def get_elevations(self) -> None:
-        """
-        Get prop elevations from ASCII grids
+        """ Get elevations for non-residential properties
         """
         # Ask for confirmation
         msgbox = QMessageBox(self)
@@ -1153,8 +1171,7 @@ class NonResidentialTab(QWidget):
             self.display_elevations()
 
     def get_checks(self) -> None:
-        """
-        Find checked properties with valid ground level entries
+        """ Find checked non-residential properties with valid ground level entries
         """
         checked_props = [group.isChecked() for group in self.groups]
         valid_gls = [gl is not None for gl in self.db.non_res_ground_levels]
@@ -1166,7 +1183,7 @@ class NonResidentialTab(QWidget):
 
     def display_checks(self) -> None:
         """
-        Enable/Disable self.groups based on checks
+        Enable/Disable groups based on checks
         Used for reloading display after appraisal loads
         """
         for i in range(self.db.non_res_count):
@@ -1174,6 +1191,8 @@ class NonResidentialTab(QWidget):
 
 
 class AsciiTab(QWidget):
+    """ UI widget for the ASCII tab of the detailed appraisal 
+    """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
         super().__init__()
 
@@ -1197,8 +1216,7 @@ class AsciiTab(QWidget):
         self.display_asciis()
 
     def initUI(self) -> None:
-        """ 
-        UI Setup
+        """ Initialise UI
         """
         text = QLabel("Here you can view your uploaded ASCII Grids")
         text.setAlignment(Qt.AlignCenter)
@@ -1223,8 +1241,10 @@ class AsciiTab(QWidget):
         self.setLayout(main_lyt)
 
     def display_ascii(self, index: int) -> None:
-        """
-        Update display of single property
+        """ Reload display of single ASCII grid
+        
+        Args:
+            index (int): Index of ASCII grid to be reloaded
         """
         # Access ASCII info from db
         fname = self.db.ascii_fnames[index]
@@ -1246,8 +1266,7 @@ class AsciiTab(QWidget):
             "Nodata value: {}".format(nodata_value))
 
     def display_asciis(self) -> None:
-        """
-        Display all uploaded asciis in scroll area 
+        """ Reload displays of all uploaded ASCII grids in scroll area
         """
         # Remove all groupboxes currently in scroll area
         for i in reversed(range(self.scroll_area.count())):
@@ -1319,8 +1338,7 @@ class AsciiTab(QWidget):
             self.scroll_area.addWidget(self.groups[i])
 
     def build_temp(self) -> None:
-        """
-        Add label if no grids are uploaded 
+        """ Add label if no ASCII grids are uploaded
         """
         text = QLabel(
             """You haven't uploaded any ASCII grids yet\n\nAdd some from the Upload Tab to begin""")
@@ -1328,8 +1346,7 @@ class AsciiTab(QWidget):
         self.scroll_area.addWidget(text)
 
     def edit_ascii(self, index: int) -> None:
-        """ 
-        Edit details of ASCII grid
+        """ Run the EditAsciiDetailed widget for a single grid
         """
         popup = EditAsciiDetails(self, self.db, index)
 
@@ -1346,6 +1363,8 @@ class AsciiTab(QWidget):
 
 
 class NodeTab(QWidget):
+    """ UI widget for the node tab of the detailed appraisal
+    """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
         super().__init__()
         self.parent = parent
@@ -1367,8 +1386,7 @@ class NodeTab(QWidget):
         self.display_nodes()
 
     def initUI(self) -> None:
-        """
-        UI Setup  
+        """ Initialise UI  
         """
         text = QLabel(
             "Here you can select which nodes you want to be included in your appraisal")
@@ -1395,8 +1413,10 @@ class NodeTab(QWidget):
         self.setLayout(main_lyt)
 
     def display_node(self, index: int) -> None:
-        """
-        Update display of sisngle node
+        """ Reload display of single node
+
+        Args:
+            index (int): Index of node to be reloaded
         """
         # Access node info from db
         easting = self.db.node_eastings[index]
@@ -1411,8 +1431,7 @@ class NodeTab(QWidget):
             self.depth_labels[index][i].setText(str(depths[i]))
 
     def display_nodes(self) -> None:
-        """
-        Display all uploaded nodes in scroll area 
+        """ Reload displays of all uploaded nodes in scroll ares
         """
         # Remove all groupboxes currently in scroll area
         for i in reversed(range(self.scroll_area.count())):
@@ -1483,8 +1502,7 @@ class NodeTab(QWidget):
             self.scroll_area.addWidget(self.groups[i])
 
     def build_temp(self) -> None:
-        """
-        Add label if no nodes are uploaded 
+        """ Add label if no nodes are uploaded 
         """
         text = QLabel(
             "You haven't uploaded any nodes yet\n\nAdd some from the Upload Tab to begin")
@@ -1492,8 +1510,10 @@ class NodeTab(QWidget):
         self.scroll_area.addWidget(text)
 
     def build_btns(self, node_count: int) -> None:
-        """
-        Build and connect (de)select buttons if properties have been uploaded 
+        """ Build and connect (de)select buttons if nodes have been uploaded
+
+        Args:
+            node_count (int): Total numebr of nodes uploaded
         """
         # FEmove all widgets currently added
         for i in reversed(range(self.btn_lyt.count())):
@@ -1511,15 +1531,19 @@ class NodeTab(QWidget):
             self.btn_lyt.addWidget(deselect_btn)
 
     def select_groups(self, state: bool) -> None:
-        """
-        Set all groups to the arg checked state
+        """ Set all groups to the arg checked state
+
+        Args:
+            state (bool): True for checked, False for unchecked
         """
         for group in self.groups:
             group.setChecked(state)
 
     def edit_node(self, index: int) -> None:
-        """
-        Edit details of node
+        """ Run the EditNodeDetails widget for a single node
+
+        Args:
+            index (int): Index of node being edited
         """
         popup = EditNodeDetails(self, self.db, index)
 
@@ -1535,15 +1559,14 @@ class NodeTab(QWidget):
         self.parent.upload_tab.update_upload_counts()
 
     def get_checks(self) -> None:
-        """
-        Get checked state of each flood shapefile node
+        """ Find checked nodes
         """
         self.db.node_checks = [group.isChecked() for group in self.groups]
         self.db.clean_node_count = len([x for x in self.db.node_checks if x])
 
     def display_checks(self) -> None:
         """
-        Enable/Disable self.groups based on checks 
+        Enable/Disable groups based on checks 
         Used for reloading display after appraisal loads
         """
         for i in range(self.db.node_count):
@@ -1551,6 +1574,8 @@ class NodeTab(QWidget):
 
 
 class ResultsTab(QWidget):
+    """ UI widget for the results tab of the detailed appraisal
+    """
     def __init__(self, parent: DetailedAppraisal, db: DetailedDataHandler) -> None:
         super().__init__()
         self.parent = parent
@@ -1569,8 +1594,7 @@ class ResultsTab(QWidget):
         self.update_totals()
 
     def initUI(self) -> None:
-        """
-        UI Setup  
+        """ Initialise UI  
         """
         # Generate table headings and set size
         col_headings = [
@@ -1654,8 +1678,7 @@ class ResultsTab(QWidget):
         self.setLayout(main_lyt)
 
     def update_table(self) -> None:
-        """
-        Update display of self.table
+        """ Update display of self.table
         """
         datapoints = self.db.get_major_datapoints()
         for row in range(len(datapoints)):
@@ -1664,8 +1687,7 @@ class ResultsTab(QWidget):
                 self.table.setItem(row, col, item)
 
     def update_totals(self) -> None:
-        """
-        Update labels displaying flood damage totals
+        """  Update labels displaying flood damage totals
         """
         self.average_annual_label.setText(
             "Average Annual Benefit:  £{:,.2f}".format(self.db.total_current_annual_benefit))
@@ -1673,8 +1695,7 @@ class ResultsTab(QWidget):
             "Lifetime Benefit:  £{:,.2f}".format(self.db.total_current_lifetime_benefit))
 
     def get_results(self) -> None:
-        """
-        Generate results for currently selected properties, nodes, and flood-event details
+        """ Generate results for currently selected properties, nodes, and flood-event details
         """
         # Update checks
         self.parent.res_tab.get_checks()
@@ -1723,22 +1744,19 @@ class ResultsTab(QWidget):
         self.update_totals()
 
     def get_damages_breakdown(self) -> None:
-        """
-        Run the DamagesBreakdown dialog
+        """ Run the DamagesBreakdown dialog
         """
         popup = DamagesBreakdown(self, self.db)
         popup.exec_()
 
     def get_benefits_breakdown(self) -> None:
-        """
-        Run the BenefitsBreakdown dialog
+        """ Run the BenefitsBreakdown dialog
         """
         popup = BenefitsBreakdown(self, self.db)
         popup.exec_()
 
     def export_results(self) -> None:
-        """
-        Run the ExportResults dialog
+        """ Run the ExportResults dialog
         """
         popup = ExportResults(self)
 
@@ -1756,8 +1774,7 @@ class ResultsTab(QWidget):
                 "detailed", os.path.join(fname, "Notes"))
 
     def save_results(self) -> None:
-        """
-        Save appraisal to .trit file
+        """ Save appraisal to .trit file
         """
         fname = utils.get_save_fname(self)
 
@@ -1785,8 +1802,10 @@ class ResultsTab(QWidget):
                 lambda: self.save_results_btn.setEnabled(True))
 
     def save_error(self, e: Exception) -> None:
-        """
-        Display traceback if errors occur during execution of JSON writing
+        """ Display traceback of error incurred during JSON writing task
+        
+        Args:
+            e (Exception): Error
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -1807,7 +1826,14 @@ class ResultsTab(QWidget):
 
 
 class PropDatasetUpload(QDialog):
+    """ UI widget for the property dataset upload dialog box
+    """
     def __init__(self, parent: UploadTab, fname: List[str]) -> None:
+        """ 
+        Args:
+            parent (UploadTab): Upload tab that dialog box is being called from 
+            fname (List[str]): Filename and filetype of selected dataset
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -1822,8 +1848,7 @@ class PropDatasetUpload(QDialog):
         self.setBaseSize(self.parent.parent.frameGeometry().size())
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel(
             "Here you can view and manually edit your uploaded dataset")
@@ -1854,8 +1879,7 @@ class PropDatasetUpload(QDialog):
         self.setLayout(main_lyt)
 
     def build_table(self) -> None:
-        """  
-        Build QTableWidget() and insert into UI
+        """ Build QTableWidget() from selected file and insert into UI
         """
         if self.fname[1] == "CSVs (*.csv)":
             self.table = table_from_csv(self.fname)
@@ -1863,8 +1887,7 @@ class PropDatasetUpload(QDialog):
             self.table = table_from_dbf(self.fname)
 
     def select_columns(self) -> None:
-        """
-        Run the SelectPropColumns dialog 
+        """ Run the SelectPropColumns dialog 
         """
         popup = SelectPropColumns(self)
 
@@ -1873,15 +1896,22 @@ class PropDatasetUpload(QDialog):
             self.columns = [int(entry.text()) for entry in popup.entries]
 
     def preview_props(self) -> None:
-        """
-        Run the PreviewPropDataset dialog 
+        """ Run the PreviewPropDataset dialog 
         """
         popup = PreviewPropDataset(self)
         popup.exec_()
 
 
 class NodeDatasetUpload(QDialog):
+    """ UI widget for the node dataset upload dialog box
+    """
     def __init__(self, parent: UploadTab, fname: List[str], db: DetailedDataHandler) -> None:
+        """ 
+        Args:
+            parent (UploadTab): Upload tab that dialog box is being called from
+            fname (List[str]): Filename and filetype of selected dataset
+            db (DetailedDataHandler): Data handler for current appraisal
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -1899,7 +1929,7 @@ class NodeDatasetUpload(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup 
+        Initialise UI 
         """
         text = QLabel(
             "Here you can view and manually edit your uploaded dataset")
@@ -1957,7 +1987,13 @@ class NodeDatasetUpload(QDialog):
 
 
 class SelectPropColumns(QDialog):
+    """ UI widget for the select property columns dialog box
+    """
     def __init__(self, parent: PropDatasetUpload) -> None:
+        """
+        Args:
+            parent (PropDatasetUpload): Dialog box that dialog box is being called from
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -1982,8 +2018,7 @@ class SelectPropColumns(QDialog):
         self.setFixedSize(self.sizeHint())
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel(
             "Select the columns from your dataset that contain important information")
@@ -2019,7 +2054,13 @@ class SelectPropColumns(QDialog):
 
 
 class SelectNodeColumns(QDialog):
+    """ UI widget for the select node columns dialog box
+    """
     def __init__(self, parent: NodeDatasetUpload) -> None:
+        """
+        Args:
+            parent (NodeDatasetUpload): Dialog box that dialog box is being called from
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2041,7 +2082,7 @@ class SelectNodeColumns(QDialog):
 
     def initUI(self) -> None:
         """ 
-        UI Setup
+        Initialise UI
         """
         text = QLabel(
             "Select the columns from your dataset that contain important information")
@@ -2077,7 +2118,13 @@ class SelectNodeColumns(QDialog):
 
 
 class PreviewPropDataset(QDialog):
+    """ UI widget for the preview property dialog box
+    """
     def __init__(self, parent: PropDatasetUpload) -> None:
+        """
+        Args:
+            parent (PropDatasetUpload): Dialog box that dialog box is being called from
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2093,8 +2140,7 @@ class PreviewPropDataset(QDialog):
         self.setBaseSize(self.parent.frameGeometry().size())
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel("The following properties were found in your dataset")
         text.setAlignment(Qt.AlignCenter)
@@ -2113,8 +2159,7 @@ class PreviewPropDataset(QDialog):
         self.setLayout(main_lyt)
 
     def build_table(self) -> None:
-        """
-        Build table of clean properties found in parent 
+        """ Build table of clean properties found in parent 
         """
         headings = const.table_headings
 
@@ -2128,8 +2173,7 @@ class PreviewPropDataset(QDialog):
         self.table = table_from_list(headings, valid_rows)
 
     def update_prop_count(self) -> None:
-        """
-        Update res and non-res property count labels 
+        """ Update residential and non-residential property count labels 
         """
         mcms = []
         for row in range(self.table.rowCount()):
@@ -2147,7 +2191,13 @@ class PreviewPropDataset(QDialog):
 
 
 class PreviewNodeDataset(QDialog):
+    """ UI widget for the preview node dialog box
+    """
     def __init__(self, parent: NodeDatasetUpload) -> None:
+        """
+        Args:
+            parent (NodeDatasetUpload): Dialog box that dialog box is being called from
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2162,8 +2212,7 @@ class PreviewNodeDataset(QDialog):
         self.setBaseSize(self.parent.frameGeometry().size())
 
     def initUI(self) -> None:
-        """ 
-        UI Setup
+        """ Initialise UI
         """
         text = QLabel("The following nodes were found in your dataset")
         text.setAlignment(Qt.AlignCenter)
@@ -2180,8 +2229,7 @@ class PreviewNodeDataset(QDialog):
         self.setLayout(main_lyt)
 
     def build_table(self) -> None:
-        """
-        Build table of clean nodes found in parent 
+        """ Build table of clean nodes found in parent 
         """
         headings = ["Easting", "Northing"]
         for rp in self.parent.db.return_periods:
@@ -2194,14 +2242,19 @@ class PreviewNodeDataset(QDialog):
         self.table = table_from_list(headings, valid_rows)
 
     def update_node_count(self) -> None:
-        """
-        Update node count labels 
+        """ Update node count labels 
         """
         self.node_count_label.setText(f"Nodes Found: {self.table.rowCount()}")
 
 
 class PropManualUpload(QDialog):
+    """ UI widget for the upload property manually dialog box
+    """
     def __init__(self, parent: UploadTab) -> None:
+        """
+        Args:
+            parent (UploadTab): Upload tab that dialog box is being called from
+        """
         super().__init__(parent)
         self.setWindowModality(Qt.WindowModal)
 
@@ -2230,8 +2283,7 @@ class PropManualUpload(QDialog):
         self.setFixedSize(self.sizeHint())
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel("Enter the details of the property to be uploaded below")
         text.setAlignment(Qt.AlignCenter)
@@ -2291,8 +2343,7 @@ class PropManualUpload(QDialog):
         self.setLayout(main_lyt)
 
     def switch_prop_type(self) -> None:
-        """
-        Switch between res/non-res property types
+        """ Switch between residential and non-residential property types
         """
         # Enable/Disable floor area entries
         if self.prop_is_res:
@@ -2318,8 +2369,7 @@ class PropManualUpload(QDialog):
         self.prop_is_res = not self.prop_is_res
 
     def check_entries(self) -> None:
-        """ 
-        Check required entries are valid
+        """ Check required entries are valid
         """
         # Get entered details
         mcm = self.mcm_entry.currentText().split("-")[0]
@@ -2350,7 +2400,15 @@ class PropManualUpload(QDialog):
 
 
 class EditResPropDetails(QDialog):
+    """ UI widget for the edit residential property dialog box
+    """
     def __init__(self, parent: ResidentialTab, db: DetailedDataHandler, index: int) -> None:
+        """
+        Args:
+            parent (ResidentialTab): Residential tab that dialog box is being called from       
+            db (DetailedDataHandler): Data handling class of current detailed appraisal
+            index (int): Index of residential property being edited
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2376,8 +2434,7 @@ class EditResPropDetails(QDialog):
         self.setFixedSize(self.sizeHint())
 
     def initUI(self) -> None:
-        """
-        UI Setup  
+        """ Initialise UI  
         """
         text = QLabel(
             "Edit the property information for Residential Property {}".format(self.index+1))
@@ -2437,8 +2494,7 @@ class EditResPropDetails(QDialog):
         self.setLayout(main_lyt)
 
     def check_entries(self) -> None:
-        """
-        Check entries are valid before updating prop information 
+        """ Check entries are valid before updating property information 
         """
         mcm = self.mcm_entry.currentText().split("-")[0]
         # Discard ground level entry from testing
@@ -2462,8 +2518,7 @@ class EditResPropDetails(QDialog):
             msgbox.exec_()
 
     def delete_property(self) -> None:
-        """
-        Confirmation and deletion of property 
+        """ Confirm deletion of residential property
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -2489,7 +2544,15 @@ class EditResPropDetails(QDialog):
 
 
 class EditNonResPropDetails(QDialog):
+    """ UI widget for the edit non-residential property dialog box
+    """
     def __init__(self, parent: NonResidentialTab, db: DetailedDataHandler, index: int) -> None:
+        """
+        Args:
+            parent (NonResidentialTab): Non-Residential tab that dialog box is being called from   
+            db (DetailedDataHandler): Data handling class of current detailed appraisal
+            index (int): Index of non-residential property being edited
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2516,8 +2579,7 @@ class EditNonResPropDetails(QDialog):
         self.setFixedSize(self.sizeHint())
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel(
             "Edit the property information for Non-Residential Property {}".format(self.index+1))
@@ -2579,8 +2641,7 @@ class EditNonResPropDetails(QDialog):
         self.setLayout(main_lyt)
 
     def check_entries(self) -> None:
-        """
-        Check entries are valid before updating prop information 
+        """ Check entries are valid before updating property information 
         """
         mcm = self.mcm_entry.currentText().split("-")[0]
         # Discard ground level entry from testing
@@ -2602,8 +2663,7 @@ class EditNonResPropDetails(QDialog):
             msgbox.exec_()
 
     def delete_property(self) -> None:
-        """
-        Confirmation and deletion of property 
+        """ Confirm deletion of property
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -2629,7 +2689,15 @@ class EditNonResPropDetails(QDialog):
 
 
 class EditAsciiDetails(QDialog):
+    """ UI widget for the edit ASCII grid dialog box
+    """
     def __init__(self, parent: AsciiTab, db: DetailedDataHandler, index: int) -> None:
+        """
+        Args:
+            parent (AsciiTab): ASCII tab that dialog box is being called from
+            db (DetailedDataHandler): Data handling class of current detailed appraisal
+            index (int): Index of ASCII grid being edited
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2651,8 +2719,7 @@ class EditAsciiDetails(QDialog):
         self.setFixedSize(self.sizeHint())
 
     def initUI(self) -> None:
-        """
-        UI Setup
+        """ Initialise UI
         """
         text = QLabel(
             "Edit information for ASCII grid {}".format(self.index+1))
@@ -2702,8 +2769,7 @@ class EditAsciiDetails(QDialog):
         self.setLayout(main_lyt)
 
     def check_entries(self) -> None:
-        """
-        Check entries are valid before updating ASCII information
+        """ Check entries are valid before updating ASCII information
         """
         if utils.is_valid_ascii([entry.text() for entry in self.entries]):
             self.accept()
@@ -2718,8 +2784,7 @@ class EditAsciiDetails(QDialog):
             msgbox.exec_()
 
     def delete_ascii(self) -> None:
-        """ 
-        Confirmation and deletion of ASCII grid
+        """ Confirm deletion of ASCII grid
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -2745,7 +2810,15 @@ class EditAsciiDetails(QDialog):
 
 
 class EditNodeDetails(QDialog):
+    """ UI widget for the edit node details dialog box
+    """
     def __init__(self, parent: NodeTab, db: DetailedDataHandler, index: int) -> None:
+        """
+        Args:
+            parent (NodeTab): Node tab that dialog box is being called from
+            db (DetailedDataHandler): Data handling class for current detailed appraisal
+            index (int): Index of node being edited
+        """
         super().__init__(parent)
 
         self.parent = parent
@@ -2764,8 +2837,7 @@ class EditNodeDetails(QDialog):
         self.setFixedSize(self.sizeHint())
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel("Edit the details of Node {}".format(self.index+1))
         text.setAlignment(Qt.AlignCenter)
@@ -2814,8 +2886,7 @@ class EditNodeDetails(QDialog):
         self.setLayout(main_lyt)
 
     def check_entries(self) -> None:
-        """
-        Check entries are valid before updating node information
+        """ Check entries are valid before updating node information
         """
         if utils.is_valid_node([entry.text() for entry in self.entries]):
             self.accept()
@@ -2830,8 +2901,7 @@ class EditNodeDetails(QDialog):
             msgbox.exec_()
 
     def delete_node(self) -> None:
-        """
-        Confirmation and deletion of node 
+        """ Confirm deletion of node
         """
         msgbox = QMessageBox(self)
         msgbox.setWindowModality(Qt.WindowModal)
@@ -2857,7 +2927,14 @@ class EditNodeDetails(QDialog):
 
 
 class EditFloodDetails(QDialog):
+    """ UI widget for the edit flood details dialog box
+    """
     def __init__(self, parent: UploadTab, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (UploadTab): Upload tab that dialog box is being called from
+            db (DetailedDataHandler): Data handling class of current detailed appraisal
+        """
         super().__init__(parent)
         self.parent = parent
         self.db = db
@@ -2892,8 +2969,7 @@ class EditFloodDetails(QDialog):
         self.update_fe()
 
     def initUI(self) -> None:
-        """
-        UI Setup
+        """ Initialise UI
         """
         text = QLabel("Edit General Flood Information and Flood Events below")
         text.setAlignment(Qt.AlignCenter)
@@ -3001,8 +3077,7 @@ class EditFloodDetails(QDialog):
         self.setLayout(self.main_lyt)
 
     def build_lyt(self) -> None:
-        """
-        Build flood events into self.entry_lyt
+        """ Build flood events into self.entry_lyt
         """
         # Remove all widgets currently in lyt
         for i in reversed(range(self.entry_lyt.count())):
@@ -3018,8 +3093,7 @@ class EditFloodDetails(QDialog):
             self.entry_lyt.addWidget(self.entries[i])
 
     def update_fields(self) -> None:
-        """
-        Update entry widgets to previously entered values
+        """ Update entry widgets to previously entered values
         """
         self.event_type_entry.setCurrentText(self.db.event_type)
         self.location_entry.setCurrentText(self.db.location)
@@ -3032,8 +3106,7 @@ class EditFloodDetails(QDialog):
         self.cap_enabled_entry.setChecked(self.db.caps_enabled)
 
     def enable_cap(self) -> None:
-        """
-        Enable/Disable cap labels and entries based on checkbutton state
+        """ Enable/disable cap labels and entries based on checkbutton state
         """
         if self.db.caps_enabled:
             self.res_cap_label.setDisabled(True)
@@ -3050,8 +3123,7 @@ class EditFloodDetails(QDialog):
         self.db.caps_enabled = not self.db.caps_enabled
 
     def add_fe(self) -> None:
-        """
-        Add flood event and corresponding spinbox
+        """ Add flood event and corresponding spinbox
         """
         # Add fe
         self.db.return_periods.append(1)
@@ -3060,10 +3132,9 @@ class EditFloodDetails(QDialog):
         self.build_lyt()
 
     def remove_fe(self) -> None:
+        """ Remove flood event and corresponding spinbox
         """
-        Remove flood event and corresponding spinbox
-        """
-        # Don't remove last entry
+        # Don't remove last flood event
         if len(self.entries) > 1:
 
             # Remove fe
@@ -3073,8 +3144,7 @@ class EditFloodDetails(QDialog):
         self.build_lyt()
 
     def update_fe(self) -> None:
-        """
-        Disable flood events editing if properties have been uploaded
+        """ Disable flood events editing if properties have been uploaded
         """
         if self.db.node_count != 0:
             self.fe_group.setDisabled(True)
@@ -3088,7 +3158,14 @@ class EditFloodDetails(QDialog):
 
 
 class DamagesBreakdown(QDialog):
+    """ UI widget for the damages breakdown dialog box
+    """
     def __init__(self, parent: ResultsTab, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (ResultsTab): Results tab that dialog box is being called from
+            db (DetailedDataHandler): Data handling class of current detailed appraisal
+        """
         super().__init__(parent)
         self.parent = parent
         self.db = db
@@ -3106,8 +3183,7 @@ class DamagesBreakdown(QDialog):
         self.residential_breakdown()
 
     def initUI(self) -> None:
-        """
-        UI Setup
+        """ Initialise UI
         """
         text = QLabel(
             "Here you can view a property-by-property breakdown of damages calculated in this appraisal")
@@ -3151,8 +3227,7 @@ class DamagesBreakdown(QDialog):
         self.setLayout(main_lyt)
 
     def residential_breakdown(self) -> None:
-        """
-        Display breakdown of residential damages
+        """ Display breakdown of residential damages
         """
         # Generate table headings and set table size
         col_headings = ["Address", "Average\nAnnual Damage", "Lifetime Damage"]
@@ -3221,8 +3296,7 @@ class DamagesBreakdown(QDialog):
             self.capping_label.hide()
 
     def non_residential_breakdown(self) -> None:
-        """
-        Display breakdown of non-residential damages
+        """ Display breakdown of non-residential damages
         """
         # Generate table headings and set table size
         col_headings = ["Address", "Average\nAnnual Damage", "Lifetime Damage"]
@@ -3300,8 +3374,7 @@ class DamagesBreakdown(QDialog):
             self.capping_label.hide()
 
     def intangible_breakdown(self) -> None:
-        """
-        Display breakdown of intangible damages
+        """ Display breakdown of intangible damages
         """
         # Generate table headings and set table size
         col_headings = [
@@ -3345,8 +3418,7 @@ class DamagesBreakdown(QDialog):
             self.capping_label.hide()
 
     def mental_health_breakdown(self) -> None:
-        """
-        Display breakdown of mental health damages
+        """ Display breakdown of mental health damages
         """
         # Generate table headings and set table size
         col_headings = ["Address", "Average\nAnnual Damage", "Lifetime Damage"]
@@ -3396,8 +3468,7 @@ class DamagesBreakdown(QDialog):
             self.capping_label.hide()
 
     def vehicle_breakdown(self) -> None:
-        """
-        Display breakdown of vehicular damages
+        """ Display breakdown of vehicular damages
         """
         # Generate table headings and set table size
         col_headings = ["Address", "Average\nAnnual Damage", "Lifetime Damage"]
@@ -3448,8 +3519,7 @@ class DamagesBreakdown(QDialog):
             self.capping_label.hide()
 
     def evac_breakdown(self) -> None:
-        """
-        Display breakdown of vehicular damages
+        """ Display breakdown of vehicular damages
         """
         # Generate table headings and set table size
         col_headings = ["Address", "Average\nAnnual Damage", "Lifetime Damage"]
@@ -3501,7 +3571,14 @@ class DamagesBreakdown(QDialog):
 
 
 class BenefitsBreakdown(QDialog):
+    """ UI widget for the benefits breakdown dialog box
+    """
     def __init__(self, parent: ResultsTab, db: DetailedDataHandler) -> None:
+        """
+        Args:
+            parent (ResultsTab): Results tab that dialog box is being called from
+            db (DetailedDataHandler): Data handling class of current detailed appraisal
+        """
         super().__init__(parent)
         self.parent = parent
         self.db = db
@@ -3520,8 +3597,7 @@ class BenefitsBreakdown(QDialog):
         self.residential_breakdown()
 
     def initUI(self) -> None:
-        """
-        UI Setup
+        """ Initialise UI
         """
         text = QLabel(
             "Here you can view a property-by-property breakdown of benefits calculated in this appraisal")
@@ -3567,8 +3643,7 @@ class BenefitsBreakdown(QDialog):
         self.setLayout(main_lyt)
 
     def residential_breakdown(self) -> None:
-        """
-        Display breakdown of residential benefits
+        """ Display breakdown of residential benefits
         """
         # Generate table headings and set table size
         # Ignore first return period becuase of how benefit trapezia are calculated
@@ -3601,8 +3676,7 @@ class BenefitsBreakdown(QDialog):
             self.table.setItem(self.db.clean_res_count, event+1, total_item)
 
     def non_residential_breakdown(self) -> None:
-        """
-        Display breakdown of non-residential benefits
+        """ Display breakdown of non-residential benefits
         """
         # Generate table headings and set table size
         # Ignore first return period because of how benefit trapezia are calculated
@@ -3636,8 +3710,7 @@ class BenefitsBreakdown(QDialog):
                                event+1, total_item)
 
     def intangible_breakdown(self) -> None:
-        """
-        Display breakdown of intangible benefits
+        """ Display breakdown of intangible benefits
         """
         # Generate table headings and set table size
         col_headings = ["Address",
@@ -3676,8 +3749,7 @@ class BenefitsBreakdown(QDialog):
         self.table.setItem(self.db.clean_res_count, 2, total_lifetime_item)
 
     def mental_health_breakdown(self) -> None:
-        """
-        Display breakdown of mental health benefits
+        """ Display breakdown of mental health benefits
         """
         # Generate table headings and set table size
         # Ignore first return period because of how benefit trapezia are calculated
@@ -3710,8 +3782,7 @@ class BenefitsBreakdown(QDialog):
             self.table.setItem(self.db.clean_res_count, event+1, total_item)
 
     def vehicle_breakdown(self) -> None:
-        """
-        Display breakdown of vehicle benefits
+        """ Display breakdown of vehicle benefits
         """
         # Generate table headings and set table size
         # Ignore first return period becuase of how benefit trapezia are calculated
@@ -3744,8 +3815,7 @@ class BenefitsBreakdown(QDialog):
             self.table.setItem(self.db.clean_res_count, event+1, total_item)
 
     def evac_breakdown(self) -> None:
-        """
-        Display breakdown of evac benefits
+        """ Display breakdown of evac benefits
         """
         # Generaet table headings and set table size
         # Ignore first return period because of how benefit trapezia are calculated
@@ -3779,7 +3849,13 @@ class BenefitsBreakdown(QDialog):
 
 
 class ExportResults(QDialog):
+    """ UI widget for the export results dialog box
+    """
     def __init__(self, parent: ResultsTab) -> None:
+        """
+        Args:
+            parent (ResultsTab): Results tab that dialog box is being called from
+        """
         super().__init__(parent)
         self.parent = parent
 
@@ -3807,8 +3883,7 @@ class ExportResults(QDialog):
         self.initUI()
 
     def initUI(self) -> None:
-        """
-        UI Setup 
+        """ Initialise UI 
         """
         text = QLabel("Select the data you would like to export")
         text.setAlignment(Qt.AlignCenter)
@@ -3849,8 +3924,7 @@ class ExportResults(QDialog):
         self.setLayout(main_lyt)
 
     def check_entries(self) -> None:
-        """
-        Check at least one file format is selected
+        """ Check at least one file format is selected
         """
         if sum([btn.isChecked() for btn in self.file_btns]):
             # At least one button selected
@@ -3868,8 +3942,7 @@ class ExportResults(QDialog):
             msgbox.exec_()
 
     def get_file_path(self) -> None:
-        """
-        Ask for save location
+        """ Prompt user for save location
         """
         # Discard filetype from fname
         self.path = utils.get_save_fname(self)
@@ -3884,7 +3957,6 @@ class ExportResults(QDialog):
 ### MULTIHREADING ##
 ####################
 """
-
 
 class JSONWriteWorker(QObject):
     # Signal fields

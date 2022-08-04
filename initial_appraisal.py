@@ -47,7 +47,7 @@ class InitialAppraisal(QWidget):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel(
             "From here you can edit flood information,  generate,  and export results")
@@ -351,7 +351,7 @@ class EditFloodDetails(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup 
+        Initialise UI 
         """
         text = QLabel("Edit General Flood Information below")
         text.setAlignment(Qt.AlignCenter)
@@ -432,7 +432,7 @@ class ResultsBreakdown(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel(
             "Here you can view a more advanced breakdown of appraisal results")
@@ -543,7 +543,7 @@ class ExportResults(QDialog):
 
     def initUI(self) -> None:
         """
-        UI Setup
+        Initialise UI
         """
         text = QLabel("Select the data you would like to export")
         text.setAlignment(Qt.AlignCenter)

@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog,
 
 import const
 import utils
-from appraisal import Appraisal
 from overview_datahandler import OverviewDataHandler
 
 """
@@ -20,7 +19,7 @@ from overview_datahandler import OverviewDataHandler
 ####################
 """
 
-class OverviewAppraisal(Appraisal):
+class OverviewAppraisal(QWidget):
     """ UI widget for Detailed Appraisals performed by Stix FAS
     """
     def __init__(self, controller) -> None:
@@ -28,8 +27,10 @@ class OverviewAppraisal(Appraisal):
         Args:
             controller (Stix): QMainWindow that provides access to page switching methods 
         """
+        super().__init__()
+        
+        self.controller = controller
         self.db = OverviewDataHandler()
-        super().__init__(controller, self.db)
 
         self.tabs = QTabWidget()
         self.entry_tab = EntryTab(self, self.db)
@@ -54,6 +55,24 @@ class OverviewAppraisal(Appraisal):
         main_lyt = QVBoxLayout()
         main_lyt.addWidget(self.tabs)
         self.setLayout(main_lyt)
+
+    def return_home(self) -> None:
+        """ Close the Overview Appraisal widget
+        """
+        # Ask for confirmation
+        msgbox = QMessageBox(self)
+        msgbox.setWindowModality(Qt.WindowModal)
+        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setText("All unsaved results will be lost")
+        msgbox.setInformativeText("Do you want to proceed?")
+        msgbox.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
+        msgbox.setEscapeButton(QMessageBox.No)
+        msgbox.setDefaultButton(QMessageBox.Yes)
+        retval = msgbox.exec_()
+        
+        if retval == QMessageBox.Yes:
+            # Exit appraisal 
+            self.controller.select_page(0)    
 
     def load_appraisal(self, fname: str) -> None:
         """ Load appraisal state from saved file
@@ -94,6 +113,21 @@ class OverviewAppraisal(Appraisal):
             self.thread.finished.connect(self.entry_tab.reload_non_res_table)
             self.thread.finished.connect(self.results_tab.update_table)
 
+    def load_appraisal_error(self, e: Exception) -> None:
+        """ Display traceback of error incurred during appraisal load
+
+        Args:
+            e (Exception): Error
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowModality(Qt.WindowModal)
+        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setText("An error occured during the loading of this appraisal")
+        msgbox.setDetailedText(f"Traceback: {e}")
+        msgbox.setStandardButtons(QMessageBox.Ok)
+        msgbox.setEscapeButton(QMessageBox.Ok)
+        msgbox.setDefaultButton(QMessageBox.Ok)
+        msgbox.exec_()
 
 """
 ####################
@@ -1000,11 +1034,10 @@ class JSONWriteWorker(QObject):
         self.fname = fname
 
     def run(self) -> None:
-        """
-        Long-running JSON-writing task
+        """ Long-running JSON-writing task
         """
         try:
-            with open(f"{self.fname}.Stix", "w") as f:
+            with open(f"{self.fname}.stix", "w") as f:
                 json.dump(self.appraisal.db.__dict__, f)
 
         except Exception as e:
@@ -1020,7 +1053,6 @@ class JSONWriteWorker(QObject):
 
 class JSONLoadWorker(QObject):
     # Signal fields
-    progress = pyqtSignal(str)
     finished = pyqtSignal()
     error = pyqtSignal(Exception)
 
@@ -1030,8 +1062,7 @@ class JSONLoadWorker(QObject):
         self.fname = fname
 
     def run(self) -> None:
-        """
-        Long-running JSON-loading task
+        """ Long-running JSON-loading task
         """
         try:
             with open(self.fname, "r") as f:

@@ -17,7 +17,6 @@ import const
 import utils
 from detailed_datahandler import DetailedDataHandler
 from detailed_appraisal_utils import *
-from appraisal import Appraisal
 
 """
 ####################
@@ -25,8 +24,8 @@ from appraisal import Appraisal
 ####################
 """
 
-
-class DetailedAppraisal(Appraisal):
+    
+class DetailedAppraisal(QWidget):
     """ UI widget for Detailed Appraisals performed by Stix FAS
     """
     def __init__(self, controller) -> None:
@@ -34,8 +33,10 @@ class DetailedAppraisal(Appraisal):
         Args:
             controller (Stix): QMainWindow that provides access to page switching methods 
         """
+        super().__init__()
+        
+        self.controller = controller
         self.db = DetailedDataHandler()
-        super().__init__(controller, self.db)
 
         # Display fields
         self.tabs = QTabWidget()
@@ -71,6 +72,23 @@ class DetailedAppraisal(Appraisal):
         main_lyt.addWidget(self.tabs)
         self.setLayout(main_lyt)
 
+    def return_home(self) -> None:
+        """ Close the Detailed Appraisal widget
+        """
+        # Ask for confirmation
+        msgbox = QMessageBox(self)
+        msgbox.setWindowModality(Qt.WindowModal)
+        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setText("All unsaved results will be lost")
+        msgbox.setInformativeText("Do you want to proceed?")
+        msgbox.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
+        msgbox.setEscapeButton(QMessageBox.No)
+        msgbox.setDefaultButton(QMessageBox.Yes)
+        retval = msgbox.exec_()
+        
+        if retval == QMessageBox.Yes:
+            # Exit appraisal 
+            self.controller.select_page(0)    
 
     def load_appraisal(self, fname: str) -> None:
         """ Load appraisal state from saved file
@@ -114,6 +132,21 @@ class DetailedAppraisal(Appraisal):
             self.thread.finished.connect(self.non_res_tab.display_checks)
             self.thread.finished.connect(self.node_tab.display_checks)
 
+    def load_appraisal_error(self, e: Exception) -> None:
+        """ Display traceback of error incurred during appraisal load
+
+        Args:
+            e (Exception): Error
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowModality(Qt.WindowModal)
+        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setText("An error occured during the loading of this appraisal")
+        msgbox.setDetailedText(f"Traceback: {e}")
+        msgbox.setStandardButtons(QMessageBox.Ok)
+        msgbox.setEscapeButton(QMessageBox.Ok)
+        msgbox.setDefaultButton(QMessageBox.Ok)
+        msgbox.exec_()
 
 
 """

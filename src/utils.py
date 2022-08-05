@@ -3,6 +3,7 @@ import csv
 import json
 import math
 from typing import Any, Dict, List, Union
+import xlsxwriter
 
 import os
 import sys

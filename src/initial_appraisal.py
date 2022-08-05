@@ -12,7 +12,6 @@ from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog,
 
 import const
 import utils
-from appraisal import Appraisal
 from initial_datahandler import InitialDataHandler
 
 """
@@ -21,7 +20,7 @@ from initial_datahandler import InitialDataHandler
 ####################
 """
 
-class InitialAppraisal(Appraisal):
+class InitialAppraisal(QWidget):
     """ UI widget for initial appraisals performed by Stix FAS
     """
     def __init__(self, controller) -> None:
@@ -29,8 +28,10 @@ class InitialAppraisal(Appraisal):
         Args:
             controller (Stix): QMainWindow that provides access to page switching methods 
         """
+        super().__init__()
+        
+        self.controller = controller
         self.db = InitialDataHandler()
-        super().__init__(controller, self.db)
 
         # Connect MenuBar actions
         self.controller.save_action.disconnect()
@@ -133,6 +134,24 @@ class InitialAppraisal(Appraisal):
         self.main_lyt.addWidget(advanced_group, 2, 0, 1, 2)
         self.main_lyt.addLayout(utils.centered_hbox(home_btn), 4, 0, 1, 2)
         self.setLayout(self.main_lyt)
+        
+    def return_home(self) -> None:
+        """ Close the Initial Appraisal widget
+        """
+        # Ask for confirmation
+        msgbox = QMessageBox(self)
+        msgbox.setWindowModality(Qt.WindowModal)
+        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setText("All unsaved results will be lost")
+        msgbox.setInformativeText("Do you want to proceed?")
+        msgbox.setStandardButtons(QMessageBox.No | QMessageBox.Yes)
+        msgbox.setEscapeButton(QMessageBox.No)
+        msgbox.setDefaultButton(QMessageBox.Yes)
+        retval = msgbox.exec_()
+        
+        if retval == QMessageBox.Yes:
+            # Exit appraisal 
+            self.controller.select_page(0)    
 
     def view_breakdown(self) -> None:
         """ Run the ResultsBreakdown dialog
@@ -291,6 +310,22 @@ class InitialAppraisal(Appraisal):
             # Reload diplsays upon task finishing
             self.thread.finished.connect(self.update_event_details)
             self.thread.finished.connect(self.update_table)
+
+    def load_appraisal_error(self, e: Exception) -> None:
+        """ Display traceback of error incurred during appraisal load
+
+        Args:
+            e (Exception): Error
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowModality(Qt.WindowModal)
+        msgbox.setIcon(QMessageBox.Warning)
+        msgbox.setText("An error occured during the loading of this appraisal")
+        msgbox.setDetailedText(f"Traceback: {e}")
+        msgbox.setStandardButtons(QMessageBox.Ok)
+        msgbox.setEscapeButton(QMessageBox.Ok)
+        msgbox.setDefaultButton(QMessageBox.Ok)
+        msgbox.exec_()
 
 """
 ####################

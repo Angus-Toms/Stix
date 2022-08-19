@@ -17,6 +17,7 @@ import const
 import utils
 from detailed_datahandler import DetailedDataHandler
 from detailed_appraisal_utils import *
+from workers import *
 
 """
 ####################
@@ -421,7 +422,7 @@ class UploadTab(QWidget):
 
         # Instantiate thread and worker
         self.thread = QThread()
-        worker = AsciiWorker(self, fnames)
+        worker = AsciiUploadWorker(self, fnames)
         worker.moveToThread(self.thread)
 
         # Connect signals
@@ -718,7 +719,7 @@ class ResidentialTab(QWidget):
         self.northing_labels = [QLabel(f"Northing: {i}") for i in northings]
         self.address_labels = [QLabel(f"Address: {i}") for i in addresses]
         self.town_labels = [QLabel(f"Town: {towns[i]} - {postcodes[i]}") for i in range(prop_count)]
-        self.mcm_labels = [QLabel(f"MCM Code: {mcm} - {const.res_mcms[mcm]}") for mcm in mcms]
+        self.mcm_labels = [QLabel(f"MCM Code: {mcm} - {const.res_mcm[mcm]}") for mcm in mcms]
         self.ground_level_labels = [QLabel(f"Ground Level: {i}") for i in ground_levels]
 
         # Write over other widgets
@@ -3978,157 +3979,3 @@ class ExportResults(QDialog):
         # Location selected
         if self.path:
             self.accept()
-
-
-"""
-####################
-### MULTIHREADING ##
-####################
-"""
-
-class JSONWriteWorker(QObject):
-    # Signal fields
-    finished = pyqtSignal()
-    error = pyqtSignal(Exception)
-
-    def __init__(self, appraisal: DetailedAppraisal, fname: str) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.fname = fname
-
-    def run(self) -> None:
-        """
-        Long-running JSON-writing task
-        """
-        try:
-            with open(f"{self.fname}.Stix", "w") as f:
-                json.dump(self.appraisal.db.__dict__,
-                          f, cls=utils.NumpyEncoder)
-
-        except Exception as e:
-            self.error.emit(e)
-
-            # Delete half-written results file
-            if os.path.exists(f"{self.fname}.Stix"):
-                os.remove(f"{self.fname}.Stix")
-
-        # Execution finished
-        self.finished.emit()
-
-
-class JSONLoadWorker(QObject):
-    # Signal fields
-    progress = pyqtSignal(str)
-    finished = pyqtSignal()
-    error = pyqtSignal(Exception)
-
-    def __init__(self, appraisal: DetailedAppraisal, fname: str) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.fname = fname
-
-    def run(self) -> None:
-        """
-        Long-running JSON-loading task 
-        """
-        try:
-            with open(self.fname, "r") as f:
-                self.appraisal.db.__dict__ = json.load(f)
-
-        except Exception as e:
-            self.error.emit(e)
-
-        # Execution finished
-        self.finished.emit()
-
-
-class AsciiWorker(QObject):
-    # Signal fields
-    finished = pyqtSignal()
-    progress = pyqtSignal(float)
-    error = pyqtSignal(Exception, str)
-
-    def __init__(self, appraisal: DetailedAppraisal, fnames: List[str]) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.fnames = fnames
-
-    def run(self) -> None:
-        """
-        Long-running ASCII upload task
-        """
-        ascii_count = len(self.fnames)
-
-        try:
-            for i in range(ascii_count):
-                self.appraisal.db.add_ascii(self.fnames[i])
-                # Progress signal
-                self.progress.emit(i/ascii_count)
-
-        except Exception as e:
-            self.error.emit(e, self.fnames[i])
-
-        # Execution finished
-        self.finished.emit()
-
-
-class PropUploadWorker(QObject):
-    # Signal fields
-    finished = pyqtSignal()
-    progress = pyqtSignal(float)
-    error = pyqtSignal(Exception)
-
-    def __init__(self, appraisal: DetailedAppraisal, columns: List[int], table: QTableWidget) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.columns = columns
-        self.table = table
-
-    def run(self) -> None:
-        """
-        Long-running property upload task
-        """
-        try:
-            props = read_table_with_columns(self.columns, self.table)
-            prop_count = len(props)
-            for i in range(prop_count):
-                self.appraisal.db.add_prop(props[i])
-                # Progress signal
-                self.progress.emit(i/prop_count)
-
-        except Exception as e:
-            self.error.emit(e)
-
-        # Execution finished
-        self.finished.emit()
-
-
-class NodeUploadWorker(QObject):
-    # Signal fields
-    finished = pyqtSignal()
-    progress = pyqtSignal(float)
-    error = pyqtSignal(Exception)
-
-    def __init__(self, appraisal: DetailedAppraisal, columns: List[int], table: QTableWidget) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.columns = columns
-        self.table = table
-
-    def run(self) -> None:
-        """
-        Long-running node-upload task
-        """
-        try:
-            nodes = read_table_with_columns(self.columns, self.table)
-            node_count = len(nodes)
-            for i in range(node_count):
-                self.appraisal.db.add_node(nodes[i])
-                # Progress signal
-                self.progress.emit(i/node_count)
-
-        except Exception as e:
-            self.error.emit(e)
-
-        # Execution finished
-        self.finished.emit()

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import (QAbstractItemView, QCheckBox, QComboBox, QDialog,
 import const
 import utils
 from overview_datahandler import OverviewDataHandler
+from workers import *
 
 """
 ####################
@@ -1014,62 +1015,3 @@ class ExportResults(QDialog):
         # Location selected
         if self.path:
             self.accept()
-
-
-"""
-####################
-### MULTIHREADING ##
-####################
-"""
-
-
-class JSONWriteWorker(QObject):
-    # Signal fields
-    finished = pyqtSignal()
-    error = pyqtSignal(Exception)
-
-    def __init__(self, appraisal: OverviewAppraisal, fname: str) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.fname = fname
-
-    def run(self) -> None:
-        """ Long-running JSON-writing task
-        """
-        try:
-            with open(f"{self.fname}.stix", "w") as f:
-                json.dump(self.appraisal.db.__dict__, f)
-
-        except Exception as e:
-            self.error.emit(e)
-
-            # Delete half-written results file
-            if os.path.exists(f"{self.fname}.Stix"):
-                os.remove(f"{self.fname}.Stix")
-
-        # Execution finished
-        self.finished.emit()
-
-
-class JSONLoadWorker(QObject):
-    # Signal fields
-    finished = pyqtSignal()
-    error = pyqtSignal(Exception)
-
-    def __init__(self, appraisal: OverviewAppraisal, fname: str) -> None:
-        super().__init__()
-        self.appraisal = appraisal
-        self.fname = fname
-
-    def run(self) -> None:
-        """ Long-running JSON-loading task
-        """
-        try:
-            with open(self.fname, "r") as f:
-                self.appraisal.db.__dict__ = json.load(f)
-
-        except Exception as e:
-            self.error.emit(e)
-
-        # Execution finished
-        self.finished.emit()
